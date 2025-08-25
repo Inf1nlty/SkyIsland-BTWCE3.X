@@ -72,7 +72,9 @@ public class IslandDataManager {
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
         setIsland(player, ip);
-//        String posKey = ip.x + ":" + ip.z;
-//        IslandManager.addUsedIslandPosition(posKey);
+        String newKey = ip.dim + ":" + ip.x + ":" + ip.z;
+        if (!IslandManager.isUsedIslandPosition(newKey)) {
+            IslandManager.addUsedIslandPosition(newKey);
+        }
     }
 }

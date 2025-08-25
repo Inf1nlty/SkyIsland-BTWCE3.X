@@ -39,31 +39,6 @@ public class IslandManager {
         return new SchematicData(width, length, height, blocks, data, addBlocks, tileEntities);
     }
 
-//    public static SchematicData loadSchematic(String path) {
-//        File file = new File(path);
-//        if (file.exists()) {
-//            try (FileInputStream fis = new FileInputStream(file)) {
-//                NBTTagCompound nbt = CompressedStreamTools.readCompressed(fis);
-//                return parseNBT(nbt);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        } else {
-//            try (InputStream is = SchematicData.class.getClassLoader().getResourceAsStream(path)) {
-//                if (is == null) {
-//                    System.out.println("Schematic resource not found: " + path);
-//                    return null;
-//                }
-//                NBTTagCompound nbt = CompressedStreamTools.readCompressed(is);
-//                return parseNBT(nbt);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//    }
-
     /**
      * Allocates a new, unique island for a player (always assigns a new island).
      * Islands are distributed in concentric rings around (0,0), with each island spaced 2500 blocks apart.
@@ -74,7 +49,7 @@ public class IslandManager {
     public static final int ISLANDS_PER_RING = 8;
 
     public static IslandPoint makeIsland(EntityPlayerMP player, WorldServer world) {
-        IslandPoint existing = getIsland(player);
+        IslandPoint existing = IslandDataManager.getIsland(player);
         if (existing != null) return existing;
         for (int ring = 0; ring < MAX_RING; ring++) {
             int radius = ISLAND_DISTANCE * (ring + 1);
@@ -82,14 +57,13 @@ public class IslandManager {
                 double angle = 2 * Math.PI * idx / ISLANDS_PER_RING;
                 int x = (int) Math.round(radius * Math.cos(angle));
                 int z = (int) Math.round(radius * Math.sin(angle));
-                String posKey = x + ":" + z;
+                String posKey = world.provider.dimensionId + ":" + x + ":" + z;
                 if (!usedIslandPositions.contains(posKey)) {
                     usedIslandPositions.add(posKey);
                     islandPositionsDirty = true;
-                    trySyncIslandPositions(world);
                     writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
-                    IslandPoint ip = new IslandPoint(player.username, x, ISLAND_Y, z, 0);
-                    setIsland(player, ip);
+                    IslandPoint ip = new IslandPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
+                    IslandDataManager.setIsland(player, ip);
                     return ip;
                 }
             }
@@ -109,8 +83,13 @@ public class IslandManager {
         }
     }
 
-    public static void addUsedIslandPosition(String posKey) {
-        usedIslandPositions.add(posKey);
+    public static boolean isUsedIslandPosition(String key) {
+        return usedIslandPositions.contains(key);
+    }
+
+    public static void addUsedIslandPosition(String key) {
+        usedIslandPositions.add(key);
+        islandPositionsDirty = true;
     }
 
     public static void writeGlobalIslandData(NBTTagCompound worldTag) {
@@ -131,6 +110,9 @@ public class IslandManager {
         int count = globalTag.getInteger("count");
         for (int i = 0; i < count; i++) {
             String pos = globalTag.getString("pos_" + i);
+            if (pos.indexOf(':') == pos.lastIndexOf(':')) {
+                pos = "0:" + pos;
+            }
             usedIslandPositions.add(pos);
         }
     }
@@ -212,8 +194,6 @@ public class IslandManager {
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
-//        String posKey = ip.x + ":" + ip.z;
-//        usedIslandPositions.add(posKey);
         return ip;
     }
 
