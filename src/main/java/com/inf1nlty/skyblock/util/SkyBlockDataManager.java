@@ -1,4 +1,4 @@
-package com.inf1nlty.skyisland.util;
+package com.inf1nlty.skyblock.util;
 
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
@@ -9,14 +9,14 @@ import java.util.Map;
 /**
  * Handles island data persistence and retrieval.
  */
-public class IslandDataManager {
-    private static final Map<String, IslandPoint> playerIslands = new HashMap<>();
+public class SkyBlockDataManager {
+    private static final Map<String, SkyBlockPoint> playerIslands = new HashMap<>();
 
-    public static IslandPoint getIsland(EntityPlayerMP player) {
+    public static SkyBlockPoint getIsland(EntityPlayerMP player) {
         return playerIslands.get(player.username);
     }
 
-    public static void setIsland(EntityPlayerMP player, IslandPoint ip) {
+    public static void setIsland(EntityPlayerMP player, SkyBlockPoint ip) {
         if (ip == null) {
             playerIslands.remove(player.username);
         } else {
@@ -28,7 +28,7 @@ public class IslandDataManager {
      * Writes the player's island data to NBT.
      */
     public static void writeIslandToNBT(EntityPlayerMP player, NBTTagCompound tag) {
-        IslandPoint ip = getIsland(player);
+        SkyBlockPoint ip = getIsland(player);
         if (ip == null) return;
         NBTTagCompound islandTag = new NBTTagCompound();
         islandTag.setBoolean("exists", true);
@@ -58,7 +58,7 @@ public class IslandDataManager {
             setIsland(player, null);
             return;
         }
-        IslandPoint ip = new IslandPoint(
+        SkyBlockPoint ip = new SkyBlockPoint(
                 player.username,
                 islandTag.getInteger("x"),
                 islandTag.getInteger("y"),
@@ -73,8 +73,8 @@ public class IslandDataManager {
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
         setIsland(player, ip);
         String newKey = ip.dim + ":" + ip.x + ":" + ip.z;
-        if (!IslandManager.isUsedIslandPosition(newKey)) {
-            IslandManager.addUsedIslandPosition(newKey);
+        if (!SkyBlockManager.isUsedIslandPosition(newKey)) {
+            SkyBlockManager.addUsedIslandPosition(newKey);
         }
     }
 }

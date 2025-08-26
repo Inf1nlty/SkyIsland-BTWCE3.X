@@ -1,12 +1,10 @@
-package com.inf1nlty.skyisland.command;
-
-import com.inf1nlty.skyisland.command.IslandCommand;
+package com.inf1nlty.skyblock.command;
 
 /**
  * Alias for /island, supports all subcommands.
  * Usage: /is [i|n|d|s| ...
  */
-public class IslandAliasCommand extends IslandCommand {
+public class SkyBlockAliasCommand extends SkyBlockCommand {
     @Override
     public String getCommandName() {
         return "is";

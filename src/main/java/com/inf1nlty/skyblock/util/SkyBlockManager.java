@@ -1,14 +1,10 @@
-package com.inf1nlty.skyisland.util;
+package com.inf1nlty.skyblock.util;
 
 import net.minecraft.src.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-public class IslandManager {
+public class SkyBlockManager {
 
     public static final int ISLAND_Y = 65;
     public static final double ISLAND_X_OFFSET = 0;
@@ -20,7 +16,7 @@ public class IslandManager {
 
     private static final java.util.Set<String> usedIslandPositions = new java.util.HashSet<>();
 
-    public static final String SCHEMATIC_PATH = "assets/skyisland/Island01.schematic";
+    public static final String SCHEMATIC_PATH = "assets/skyblock/Island01.schematic";
 
     private static boolean islandPositionsDirty = false;
 
@@ -48,8 +44,8 @@ public class IslandManager {
     public static final int MAX_RING = 100;
     public static final int ISLANDS_PER_RING = 8;
 
-    public static IslandPoint makeIsland(EntityPlayerMP player, WorldServer world) {
-        IslandPoint existing = IslandDataManager.getIsland(player);
+    public static SkyBlockPoint makeIsland(EntityPlayerMP player, WorldServer world) {
+        SkyBlockPoint existing = SkyBlockDataManager.getIsland(player);
         if (existing != null) return existing;
         for (int ring = 0; ring < MAX_RING; ring++) {
             int radius = ISLAND_DISTANCE * (ring + 1);
@@ -62,8 +58,8 @@ public class IslandManager {
                     usedIslandPositions.add(posKey);
                     islandPositionsDirty = true;
                     writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
-                    IslandPoint ip = new IslandPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
-                    IslandDataManager.setIsland(player, ip);
+                    SkyBlockPoint ip = new SkyBlockPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
+                    SkyBlockDataManager.setIsland(player, ip);
                     return ip;
                 }
             }
@@ -71,11 +67,11 @@ public class IslandManager {
         throw new RuntimeException("No island locations available!");
     }
 
-    public static IslandPoint getIsland(EntityPlayer player) {
+    public static SkyBlockPoint getIsland(EntityPlayer player) {
         return spIslands.get(player.username);
     }
 
-    public static void setIsland(EntityPlayer player, IslandPoint ip) {
+    public static void setIsland(EntityPlayer player, SkyBlockPoint ip) {
         if (ip == null) {
             spIslands.remove(player.username);
         } else {
@@ -117,7 +113,7 @@ public class IslandManager {
         }
     }
 
-    public static void generateIsland(World world, IslandPoint island) {
+    public static void generateIsland(World world, SkyBlockPoint island) {
         int baseX = (int)(island.x + ISLAND_X_OFFSET);
         int baseY = (int)(island.y + ISLAND_Y_OFFSET);;
         int baseZ = (int)(island.z + ISLAND_Z_OFFSET);
@@ -152,15 +148,15 @@ public class IslandManager {
         }
     }
 
-    public static void setSpawn(IslandPoint island, double x, double y, double z) {
+    public static void setSpawn(SkyBlockPoint island, double x, double y, double z) {
         island.spawnX = x;
         island.spawnY = y;
         island.spawnZ = z;
     }
 
-    private static final java.util.Map<String, IslandPoint> spIslands = new java.util.HashMap<>();
+    private static final java.util.Map<String, SkyBlockPoint> spIslands = new java.util.HashMap<>();
 
-    public static void writeIslandToNBT(NBTTagCompound tag, IslandPoint ip) {
+    public static void writeIslandToNBT(NBTTagCompound tag, SkyBlockPoint ip) {
         if (ip == null) return;
         NBTTagCompound islandTag = new NBTTagCompound();
         islandTag.setBoolean("exists", true);
@@ -177,11 +173,11 @@ public class IslandManager {
         tag.setTag("SkyIsland", islandTag);
     }
 
-    public static IslandPoint readIslandFromNBT(EntityPlayer player, NBTTagCompound tag) {
+    public static SkyBlockPoint readIslandFromNBT(EntityPlayer player, NBTTagCompound tag) {
         if (!tag.hasKey("SkyIsland")) return null;
         NBTTagCompound islandTag = tag.getCompoundTag("SkyIsland");
         if (!islandTag.getBoolean("exists")) return null;
-        IslandPoint ip = new IslandPoint(
+        SkyBlockPoint ip = new SkyBlockPoint(
                 player.username,
                 islandTag.getInteger("x"),
                 islandTag.getInteger("y"),

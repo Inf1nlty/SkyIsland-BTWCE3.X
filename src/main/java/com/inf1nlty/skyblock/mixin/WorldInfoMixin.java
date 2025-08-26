@@ -1,6 +1,6 @@
-package com.inf1nlty.skyisland.mixin;
+package com.inf1nlty.skyblock.mixin;
 
-import com.inf1nlty.skyisland.util.IslandManager;
+import com.inf1nlty.skyblock.util.SkyBlockManager;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.WorldInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ public abstract class WorldInfoMixin {
      */
     @Inject(method = "<init>(Lnet/minecraft/src/NBTTagCompound;)V", at = @At("TAIL"))
     private void readGlobalIslandData(NBTTagCompound tag, CallbackInfo ci) {
-        IslandManager.readGlobalIslandData(tag);
+        SkyBlockManager.readGlobalIslandData(tag);
     }
 
     /**
@@ -27,6 +27,6 @@ public abstract class WorldInfoMixin {
      */
     @Inject(method = "updateTagCompound", at = @At("TAIL"))
     private void writeGlobalIslandData(NBTTagCompound tag, NBTTagCompound unused, CallbackInfo ci) {
-        IslandManager.writeGlobalIslandData(tag);
+        SkyBlockManager.writeGlobalIslandData(tag);
     }
 }

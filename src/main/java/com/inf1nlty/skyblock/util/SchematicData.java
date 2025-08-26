@@ -1,4 +1,4 @@
-package com.inf1nlty.skyisland.util;
+package com.inf1nlty.skyblock.util;
 
 import net.minecraft.src.*;
 import java.io.File;

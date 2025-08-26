@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "skyisland",
+  "id": "skyblock",
   "version": "${version}",
   "name": "Sky Block",
-  "description": "Adds a book that can store a limited amount of XP,\nfor Better Than Wolves Community Edition.",
+  "description": "",
   "authors": [
     "Inf1nlty"
   ],
@@ -12,22 +12,22 @@
     "sources": "https://github.com/Inf1nlty/"
   },
   "license": "MIT",
-  "icon": "assets/skyisland/icon.png",
+  "icon": "assets/skyblock/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
     ],
     "btw:addon": [
-      "btw.community.skyisland.SkyIslandAddon"
+      "btw.community.skyblock.SkyBlockAddon"
     ]
   },
   "custom": {
     "btw:addon_prefix": "XPT"
   },
   "mixins": [
-    "skyisland.mixins.json"
+    "skyblock.mixins.json"
   ],
-  "accessWidener" : "skyisland.accessWidener",
+  "accessWidener" : "skyblock.accessWidener",
   "depends": {
     "fabricloader": ">=0.14.19",
     "minecraft": "1.6.4"

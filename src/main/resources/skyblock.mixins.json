@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.inf1nlty.skyisland.mixin",
+  "package": "com.inf1nlty.skyblock.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "EntityPlayerMixin",

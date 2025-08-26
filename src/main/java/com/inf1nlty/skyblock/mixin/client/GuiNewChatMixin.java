@@ -1,4 +1,4 @@
-package com.inf1nlty.skyisland.mixin.client;
+package com.inf1nlty.skyblock.mixin.client;
 
 import net.minecraft.src.GuiNewChat;
 import net.minecraft.src.StatCollector;

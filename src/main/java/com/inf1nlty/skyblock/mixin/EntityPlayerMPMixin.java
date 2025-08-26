@@ -1,6 +1,6 @@
-package com.inf1nlty.skyisland.mixin;
+package com.inf1nlty.skyblock.mixin;
 
-import com.inf1nlty.skyisland.util.IslandDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +18,7 @@ public class EntityPlayerMPMixin {
      */
     @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
     public void writeIslandData(NBTTagCompound tag, CallbackInfo ci) {
-        IslandDataManager.writeIslandToNBT((EntityPlayerMP)(Object)this, tag);
+        SkyBlockDataManager.writeIslandToNBT((EntityPlayerMP)(Object)this, tag);
     }
 
     /**
@@ -26,6 +26,6 @@ public class EntityPlayerMPMixin {
      */
     @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
     public void readIslandData(NBTTagCompound tag, CallbackInfo ci) {
-        IslandDataManager.readIslandFromNBT((EntityPlayerMP)(Object)this, tag);
+        SkyBlockDataManager.readIslandFromNBT((EntityPlayerMP)(Object)this, tag);
     }
 }

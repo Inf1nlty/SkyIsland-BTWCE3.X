@@ -1,8 +1,8 @@
-package com.inf1nlty.skyisland.mixin;
+package com.inf1nlty.skyblock.mixin;
 
-import com.inf1nlty.skyisland.util.IslandManager;
-import com.inf1nlty.skyisland.util.IslandDataManager;
-import com.inf1nlty.skyisland.util.IslandPoint;
+import com.inf1nlty.skyblock.util.SkyBlockManager;
+import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockPoint;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
@@ -24,13 +24,13 @@ public class EntityPlayerMixin {
     public void writeIslandNBT(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayer player = (EntityPlayer) (Object) this;
         // Use DataManager for multiplayer, fallback for singleplayer
-        IslandPoint ip;
+        SkyBlockPoint ip;
         if (player instanceof EntityPlayerMP) {
-            ip = IslandDataManager.getIsland((EntityPlayerMP) player);
+            ip = SkyBlockDataManager.getIsland((EntityPlayerMP) player);
         } else {
-            ip = IslandManager.getIsland(player);
+            ip = SkyBlockManager.getIsland(player);
         }
-        IslandManager.writeIslandToNBT(tag, ip);
+        SkyBlockManager.writeIslandToNBT(tag, ip);
     }
 
     /**
@@ -39,12 +39,12 @@ public class EntityPlayerMixin {
     @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
     public void readIslandNBT(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayer player = (EntityPlayer) (Object) this;
-        IslandPoint ip = IslandManager.readIslandFromNBT(player, tag);
+        SkyBlockPoint ip = SkyBlockManager.readIslandFromNBT(player, tag);
         // Store to DataManager for multiplayer, fallback for singleplayer
         if (player instanceof EntityPlayerMP) {
-            IslandDataManager.setIsland((EntityPlayerMP) player, ip);
+            SkyBlockDataManager.setIsland((EntityPlayerMP) player, ip);
         } else {
-            IslandManager.setIsland(player, ip);
+            SkyBlockManager.setIsland(player, ip);
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.inf1nlty.skyisland.command;
+package com.inf1nlty.skyblock.command;
 
-import com.inf1nlty.skyisland.util.IslandDataManager;
-import com.inf1nlty.skyisland.util.IslandManager;
-import com.inf1nlty.skyisland.util.IslandPoint;
+import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockManager;
+import com.inf1nlty.skyblock.util.SkyBlockPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
@@ -18,7 +18,7 @@ import java.util.*;
  *   - /island setspawn /is s
  *   - /island tpa <player>|yes|no|setyes|setno
  */
-public class IslandCommand extends CommandBase {
+public class SkyBlockCommand extends CommandBase {
 
     // State for delayed creation and deletion, and tpa requests
     private static final Map<String, Integer> pendingIslandTeleports = new HashMap<>();
@@ -29,10 +29,10 @@ public class IslandCommand extends CommandBase {
 
     private static class PendingTeleport {
         public final EntityPlayerMP from;
-        public final IslandPoint targetIsland;
+        public final SkyBlockPoint targetIsland;
         public int ticksLeft;
 
-        public PendingTeleport(EntityPlayerMP from, IslandPoint targetIsland, int ticksLeft) {
+        public PendingTeleport(EntityPlayerMP from, SkyBlockPoint targetIsland, int ticksLeft) {
             this.from = from;
             this.targetIsland = targetIsland;
             this.ticksLeft = ticksLeft;
@@ -105,7 +105,7 @@ public class IslandCommand extends CommandBase {
 
         if (args.length == 0) {
             // /island -- delayed teleport to own island
-            IslandPoint island = IslandDataManager.getIsland(player);
+            SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
             if (island == null) {
                 player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound")
                         .setColor(EnumChatFormatting.RED));
@@ -170,7 +170,7 @@ public class IslandCommand extends CommandBase {
      * Displays island info for the current player.
      */
     private void handleInfo(EntityPlayerMP player) {
-        IslandPoint island = IslandDataManager.getIsland(player);
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island != null) {
             String infoLine1 = String.format(
                     "commands.island.info.line1|name=%s|x=%d|y=%d|z=%d|dim=%d",
@@ -199,7 +199,7 @@ public class IslandCommand extends CommandBase {
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        if (IslandDataManager.getIsland(player) != null) {
+        if (SkyBlockDataManager.getIsland(player) != null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
             return;
@@ -213,7 +213,7 @@ public class IslandCommand extends CommandBase {
      * Schedules the player's island for deletion.
      */
     private void handleDelete(EntityPlayerMP player) {
-        IslandPoint island = IslandDataManager.getIsland(player);
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island == null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
@@ -221,7 +221,7 @@ public class IslandCommand extends CommandBase {
         }
         island.pendingDelete = true;
         island.pendingDeleteTime = System.currentTimeMillis();
-        IslandDataManager.setIsland(player, island);
+        SkyBlockDataManager.setIsland(player, island);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.pending|name=" + player.username)
                 .setColor(EnumChatFormatting.YELLOW));
     }
@@ -230,13 +230,13 @@ public class IslandCommand extends CommandBase {
      * Confirms deletion of the player's island.
      */
     private void handleDeleteConfirm(EntityPlayerMP player) {
-        IslandPoint island = IslandDataManager.getIsland(player);
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island == null || !island.pendingDelete) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.nopending|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        IslandDataManager.setIsland(player, null);
+        SkyBlockDataManager.setIsland(player, null);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.success|name=" + player.username)
                 .setColor(EnumChatFormatting.GREEN));
     }
@@ -247,7 +247,7 @@ public class IslandCommand extends CommandBase {
     private static final int SPAWN_LIMIT_DISTANCE = 30;
 
     private void handleSetSpawn(EntityPlayerMP player) {
-        IslandPoint island = IslandDataManager.getIsland(player);
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island == null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
@@ -265,8 +265,8 @@ public class IslandCommand extends CommandBase {
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        IslandManager.setSpawn(island, player.posX, player.posY, player.posZ);
-        IslandDataManager.setIsland(player, island);
+        SkyBlockManager.setSpawn(island, player.posX, player.posY, player.posZ);
+        SkyBlockDataManager.setIsland(player, island);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.setspawn.success|name=" + player.username)
                 .setColor(EnumChatFormatting.GREEN));
     }
@@ -280,13 +280,13 @@ public class IslandCommand extends CommandBase {
         switch (arg) {
             case "setyes":
             case "setno": {
-                IslandPoint island = IslandDataManager.getIsland(player);
+                SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
                 if (island == null) {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username).setColor(EnumChatFormatting.RED));
                     return;
                 }
                 island.tpaEnabled = arg.equals("setyes");
-                IslandDataManager.setIsland(player, island);
+                SkyBlockDataManager.setIsland(player, island);
                 player.sendChatToPlayer(ChatMessageComponent.createFromText(
                                 "commands.island.tpa.set" + (island.tpaEnabled ? "yes" : "no") + "|name=" + player.username)
                         .setColor(EnumChatFormatting.GREEN));
@@ -303,8 +303,8 @@ public class IslandCommand extends CommandBase {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.offline|name=" + requesterName).setColor(EnumChatFormatting.RED));
                     return;
                 }
-                IslandPoint targetIsland = IslandDataManager.getIsland(player);
-                IslandPoint requesterIsland = IslandDataManager.getIsland(requester);
+                SkyBlockPoint targetIsland = SkyBlockDataManager.getIsland(player);
+                SkyBlockPoint requesterIsland = SkyBlockDataManager.getIsland(requester);
 
                 if (!targetIsland.tpaEnabled) {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.notenabled|name=" + player.username).setColor(EnumChatFormatting.RED));
@@ -349,8 +349,8 @@ public class IslandCommand extends CommandBase {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.offline|name=" + arg).setColor(EnumChatFormatting.RED));
             return;
         }
-        IslandPoint targetIsland = IslandDataManager.getIsland(target);
-        IslandPoint requesterIsland = IslandDataManager.getIsland(player);
+        SkyBlockPoint targetIsland = SkyBlockDataManager.getIsland(target);
+        SkyBlockPoint requesterIsland = SkyBlockDataManager.getIsland(player);
         if (targetIsland == null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.target_no_island|name=" + target.username).setColor(EnumChatFormatting.RED));
             return;
@@ -379,10 +379,10 @@ public class IslandCommand extends CommandBase {
             int ticks = entry.getValue() - 1;
             if (ticks <= 0) {
                 EntityPlayerMP player = getOnlinePlayer(entry.getKey());
-                if (player != null && IslandDataManager.getIsland(player) == null) {
-                    IslandPoint island = IslandManager.makeIsland(player, (WorldServer) world);
-                    IslandDataManager.setIsland(player, island);
-                    IslandManager.generateIsland(world, island);
+                if (player != null && SkyBlockDataManager.getIsland(player) == null) {
+                    SkyBlockPoint island = SkyBlockManager.makeIsland(player, (WorldServer) world);
+                    SkyBlockDataManager.setIsland(player, island);
+                    SkyBlockManager.generateIsland(world, island);
                     pendingIslandTeleports.put(player.username, 60);
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.create.success|name=" + player.username)
                             .setColor(EnumChatFormatting.GREEN));
@@ -402,7 +402,7 @@ public class IslandCommand extends CommandBase {
             if (ticks <= 0) {
                 EntityPlayerMP player = getOnlinePlayer(entry.getKey());
                 if (player != null) {
-                    IslandPoint island = IslandDataManager.getIsland(player);
+                    SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
                     if (island != null && player.dimension == island.dim) {
                         player.setPositionAndUpdate(island.spawnX, island.spawnY, island.spawnZ);
                         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tp_success|name=" + player.username)
@@ -424,12 +424,12 @@ public class IslandCommand extends CommandBase {
         // Handle island delete timeouts
         for (Object obj : world.playerEntities) {
             EntityPlayerMP player = (EntityPlayerMP) obj;
-            IslandPoint island = IslandDataManager.getIsland(player);
+            SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
             if (island != null && island.pendingDelete) {
                 long now = System.currentTimeMillis();
                 if (now - island.pendingDeleteTime > 60_000) {
                     island.pendingDelete = false;
-                    IslandDataManager.setIsland(player, island);
+                    SkyBlockDataManager.setIsland(player, island);
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.timeout|name=" + player.username)
                             .setColor(EnumChatFormatting.RED));
                 }

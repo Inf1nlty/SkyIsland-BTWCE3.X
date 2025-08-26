@@ -1,6 +1,6 @@
-package com.inf1nlty.skyisland.mixin;
+package com.inf1nlty.skyblock.mixin;
 
-import com.inf1nlty.skyisland.command.IslandCommand;
+import com.inf1nlty.skyblock.command.SkyBlockCommand;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.WorldServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +14,6 @@ public class MinecraftServerMixin {
     private void tick(CallbackInfo ci) {
 
         WorldServer world = MinecraftServer.getServer().worldServers[0];
-        IslandCommand.onServerTick(world);
+        SkyBlockCommand.onServerTick(world);
     }
 }
