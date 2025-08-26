@@ -1,2 +1,3 @@
 accessWidener v1 named
 accessible field net/minecraft/src/EntityPlayer username Ljava/lang/String;
+accessible field net/minecraft/src/EntityPlayer spawnChunk Lnet/minecraft/src/ChunkCoordinates;

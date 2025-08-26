@@ -36,9 +36,9 @@ public class IslandDataManager {
         islandTag.setInteger("y", ip.y);
         islandTag.setInteger("z", ip.z);
         islandTag.setInteger("dim", ip.dim);
-        islandTag.setInteger("spawnX", ip.spawnX);
-        islandTag.setInteger("spawnY", ip.spawnY);
-        islandTag.setInteger("spawnZ", ip.spawnZ);
+        islandTag.setDouble("spawnX", ip.spawnX);
+        islandTag.setDouble("spawnY", ip.spawnY);
+        islandTag.setDouble("spawnZ", ip.spawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         islandTag.setBoolean("pendingDelete", ip.pendingDelete);
         islandTag.setLong("pendingDeleteTime", ip.pendingDeleteTime);
@@ -65,9 +65,9 @@ public class IslandDataManager {
                 islandTag.getInteger("z"),
                 islandTag.getInteger("dim")
         );
-        ip.spawnX = islandTag.getInteger("spawnX");
-        ip.spawnY = islandTag.getInteger("spawnY");
-        ip.spawnZ = islandTag.getInteger("spawnZ");
+        ip.spawnX = islandTag.getDouble("spawnX");
+        ip.spawnY = islandTag.getDouble("spawnY");
+        ip.spawnZ = islandTag.getDouble("spawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");

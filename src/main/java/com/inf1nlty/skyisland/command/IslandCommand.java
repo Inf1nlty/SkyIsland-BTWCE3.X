@@ -191,7 +191,14 @@ public class IslandCommand extends CommandBase {
     /**
      * Handles delayed creation of player's islands.
      */
+    private static final int OVERWORLD_DIM_ID = 0;
+
     private void handleNew(EntityPlayerMP player) {
+        if (player.dimension != OVERWORLD_DIM_ID) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.new.only_in_overworld")
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
         if (IslandDataManager.getIsland(player) != null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
@@ -237,6 +244,8 @@ public class IslandCommand extends CommandBase {
     /**
      * Updates the spawn location for the player's island.
      */
+    private static final int SPAWN_LIMIT_DISTANCE = 30;
+
     private void handleSetSpawn(EntityPlayerMP player) {
         IslandPoint island = IslandDataManager.getIsland(player);
         if (island == null) {
@@ -249,7 +258,14 @@ public class IslandCommand extends CommandBase {
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        IslandManager.setSpawn(island, (int)player.posX, (int)player.posY, (int)player.posZ);
+        double dx = Math.abs(player.posX - island.spawnX);
+        double dz = Math.abs(player.posZ - island.spawnZ);
+        if (dx > SPAWN_LIMIT_DISTANCE || dz > SPAWN_LIMIT_DISTANCE) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.setspawn.out_of_bounds|radius=" + SPAWN_LIMIT_DISTANCE)
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        IslandManager.setSpawn(island, player.posX, player.posY, player.posZ);
         IslandDataManager.setIsland(player, island);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.setspawn.success|name=" + player.username)
                 .setColor(EnumChatFormatting.GREEN));
@@ -367,8 +383,11 @@ public class IslandCommand extends CommandBase {
                     IslandPoint island = IslandManager.makeIsland(player, (WorldServer) world);
                     IslandDataManager.setIsland(player, island);
                     IslandManager.generateIsland(world, island);
+                    pendingIslandTeleports.put(player.username, 60);
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.create.success|name=" + player.username)
                             .setColor(EnumChatFormatting.GREEN));
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tp_wait|name=" + player.username)
+                            .setColor(EnumChatFormatting.YELLOW));
                 }
                 itCreate.remove();
             } else {
