@@ -3,6 +3,7 @@ package com.inf1nlty.skyblock.util;
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SkyBlockManager {
 
@@ -88,6 +89,15 @@ public class SkyBlockManager {
         islandPositionsDirty = true;
     }
 
+    public static SkyBlockPoint getIslandForMember(EntityPlayer player) {
+        for (SkyBlockPoint ip : spIslands.values()) {
+            if (ip.members.contains(player.username)) {
+                return ip;
+            }
+        }
+        return null;
+    }
+
     public static void writeGlobalIslandData(NBTTagCompound worldTag) {
         NBTTagCompound globalTag = new NBTTagCompound();
         globalTag.setInteger("count", usedIslandPositions.size());
@@ -170,6 +180,9 @@ public class SkyBlockManager {
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         islandTag.setBoolean("pendingDelete", ip.pendingDelete);
         islandTag.setLong("pendingDeleteTime", ip.pendingDeleteTime);
+        NBTTagList memberList = new NBTTagList();
+        for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
+        islandTag.setTag("members", memberList);
         tag.setTag("SkyIsland", islandTag);
     }
 
@@ -190,6 +203,12 @@ public class SkyBlockManager {
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
+        if (islandTag.hasKey("members")) {
+            NBTTagList memberList = islandTag.getTagList("members");
+            for (int i = 0; i < memberList.tagCount(); i++) {
+                ip.members.add(((NBTTagString) memberList.tagAt(i)).data);
+            }
+        }
         return ip;
     }
 

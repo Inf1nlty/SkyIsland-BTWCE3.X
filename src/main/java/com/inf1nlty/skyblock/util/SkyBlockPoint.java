@@ -1,11 +1,15 @@
 package com.inf1nlty.skyblock.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents a sky island and its metadata.
  */
 public class SkyBlockPoint {
     public final int x, y, z, dim;
     public final String owner;
+    public Set<String> members = new HashSet<>();
     public double spawnX, spawnY, spawnZ;
     public boolean tpaEnabled = true;
     public boolean pendingDelete = false;

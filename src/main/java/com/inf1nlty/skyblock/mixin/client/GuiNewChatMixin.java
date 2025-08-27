@@ -14,44 +14,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(GuiNewChat.class)
 public class GuiNewChatMixin {
 
-    @Unique
-    private static final String[] ISLAND_KEYS = {
-            "commands.island.notfound",
-            "commands.island.tp_wait",
-            "commands.island.tp_pending",
-            "commands.island.tp_success",
-            "commands.island.already",
-            "commands.island.create.wait",
-            "commands.island.create.success",
-            "commands.island.exists",
-            "commands.island.delete.pending",
-            "commands.island.delete.timeout",
-            "commands.island.delete.nopending",
-            "commands.island.delete.success",
-            "commands.island.setspawn.success",
-            "commands.island.setspawn_dim_mismatch",
-            "commands.island.info.line1",
-            "commands.island.info.line2",
-            "commands.island.tpa.usage",
-            "commands.island.tpa.norequest",
-            "commands.island.tpa.offline",
-            "commands.island.tpa.dim_mismatch",
-            "commands.island.tpa.notenabled",
-            "commands.island.tpa.setyes",
-            "commands.island.tpa.setno",
-            "commands.island.tpa.accepted",
-            "commands.island.tpa.accepted_by",
-            "commands.island.tpa.denied",
-            "commands.island.tpa.denied_by",
-            "commands.island.tpa.wait",
-            "commands.island.tpa.tp_success",
-            "commands.island.tpa.tp_successed",
-            "commands.island.tpa.self",
-            "commands.island.tpa.request_sent",
-            "commands.island.tpa.request",
-            "commands.island.tpa.target_no_island"
-    };
-
     /**
      * Intercepts the chat variable used for rendering and performs localization and substitution.
      * Tries to preserve color codes and cleans up unused parameters.
@@ -66,33 +28,36 @@ public class GuiNewChatMixin {
             var17 = var17.substring(2);
         }
 
-        for (String keyPrefix : ISLAND_KEYS) {
-            if (var17.startsWith(keyPrefix)) {
-                int pipeIdx = var17.indexOf("|");
-                String key = pipeIdx > -1 ? var17.substring(0, pipeIdx) : var17;
-                String localized = StatCollector.translateToLocal(key);
+        // Directly match "commands.island" prefix
+        if (var17.startsWith("commands.island")) {
+            int pipeIdx = var17.indexOf("|");
+            String key = pipeIdx > -1 ? var17.substring(0, pipeIdx) : var17;
+            String localized = StatCollector.translateToLocal(key);
 
-                if (localized.equals(key)) return colorCode + var17;
+            // If not found, fallback to raw
+            if (localized.equals(key)) return colorCode + var17;
 
-                if (pipeIdx > -1) {
-                    String params = var17.substring(pipeIdx + 1);
-                    String[] paramPairs = params.split("\\|");
-                    for (String pair : paramPairs) {
-                        String[] kv = pair.split("=", 2);
-                        if (kv.length == 2) {
-                            localized = localized.replace("{" + kv[0] + "}", kv[1]);
-                        }
+            // Substitute parameters if present
+            if (pipeIdx > -1) {
+                String params = var17.substring(pipeIdx + 1);
+                String[] paramPairs = params.split("\\|");
+                for (String pair : paramPairs) {
+                    String[] kv = pair.split("=", 2);
+                    if (kv.length == 2) {
+                        localized = localized.replace("{" + kv[0] + "}", kv[1]);
                     }
-                    localized = localized.replaceAll("\\{[a-zA-Z0-9_]+}", "");
                 }
-
-                String[] lines = localized.split("\\\\n|\\n");
-                StringBuilder sb = new StringBuilder();
-                for (String line : lines) {
-                    sb.append(colorCode).append(line).append("\n");
-                }
-                return sb.toString().trim();
+                // Clean up any unsubstituted placeholders
+                localized = localized.replaceAll("\\{[a-zA-Z0-9_]+}", "");
             }
+
+            // Handle multi-line localization
+            String[] lines = localized.split("\\\\n|\\n");
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                sb.append(colorCode).append(line).append("\n");
+            }
+            return sb.toString().trim();
         }
         return colorCode + var17;
     }

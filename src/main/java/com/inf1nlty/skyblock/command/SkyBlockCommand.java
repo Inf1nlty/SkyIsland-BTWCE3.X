@@ -26,6 +26,7 @@ public class SkyBlockCommand extends CommandBase {
     private static final Map<String, String> pendingDeleteRequests = new HashMap<>();
     private static final Map<String, String> pendingTPARequests = new HashMap<>();
     private static final Map<String, PendingTeleport> pendingTeleports = new HashMap<>();
+    private static final Map<String, PendingTPARequest> pendingTPATIMEOUTRequests = new HashMap<>();
 
     private static class PendingTeleport {
         public final EntityPlayerMP from;
@@ -107,6 +108,9 @@ public class SkyBlockCommand extends CommandBase {
             // /island -- delayed teleport to own island
             SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
             if (island == null) {
+                island = SkyBlockDataManager.getIslandForMember(player);
+            }
+            if (island == null) {
                 player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound")
                         .setColor(EnumChatFormatting.RED));
                 return;
@@ -160,8 +164,39 @@ public class SkyBlockCommand extends CommandBase {
             case "setno":
                 handleTPA(player, sub);
                 break;
+            case "join":
+            case "j":
+                if (args.length >= 2) {
+                    handleJoin(player, args[1]);
+                } else {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.usage").setColor(EnumChatFormatting.YELLOW));
+                }
+                break;
+            case "accept":
+            case "a":
+                if (args.length >= 2) {
+                    handleAccept(player, args[1]);
+                } else {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.accept.usage").setColor(EnumChatFormatting.YELLOW));
+                }
+                break;
+            case "deny":
+                if (args.length >= 2) {
+                    handleDeny(player, args[1]);
+                } else {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.deny.usage").setColor(EnumChatFormatting.YELLOW));
+                }
+                break;
             default:
                 handleInfo(player);
+                break;
+            case "remove":
+            case "r":
+                if (args.length >= 2) {
+                    handleRemoveMember(player, args[1]);
+                } else {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.usage").setColor(EnumChatFormatting.YELLOW));
+                }
                 break;
         }
     }
@@ -171,17 +206,23 @@ public class SkyBlockCommand extends CommandBase {
      */
     private void handleInfo(EntityPlayerMP player) {
         SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island == null) {
+            island = SkyBlockDataManager.getIslandForMember(player);
+        }
         if (island != null) {
             String infoLine1 = String.format(
                     "commands.island.info.line1|name=%s|x=%d|y=%d|z=%d|dim=%d",
-                    player.username, island.x, island.y, island.z, island.dim
+                    island.owner, island.x, island.y, island.z, island.dim
             );
             String infoLine2 = String.format(
-                    "commands.island.info.line2|spawnX=%d|spawnY=%d|spawnZ=%d|tpa=%s",
+                    "commands.island.info.line2|spawnX=%.2f|spawnY=%.2f|spawnZ=%.2f|tpa=%s",
                     island.spawnX, island.spawnY, island.spawnZ, island.tpaEnabled ? "yes" : "no"
             );
+            String memberList = String.join(", ", island.members);
+            String infoLine3 = String.format("commands.island.info.members|members=%s", memberList);
             player.sendChatToPlayer(ChatMessageComponent.createFromText(infoLine1).setColor(EnumChatFormatting.AQUA));
             player.sendChatToPlayer(ChatMessageComponent.createFromText(infoLine2).setColor(EnumChatFormatting.AQUA));
+            player.sendChatToPlayer(ChatMessageComponent.createFromText(infoLine3).setColor(EnumChatFormatting.YELLOW));
         } else {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
@@ -202,6 +243,10 @@ public class SkyBlockCommand extends CommandBase {
         if (SkyBlockDataManager.getIsland(player) != null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (SkyBlockDataManager.getIslandForMember(player) != null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already_joined_create").setColor(EnumChatFormatting.RED));
             return;
         }
         pendingCreate.put(player.username, 60);
@@ -294,6 +339,7 @@ public class SkyBlockCommand extends CommandBase {
             }
             case "yes": {
                 String requesterName = pendingTPARequests.remove(player.username);
+                pendingTPATIMEOUTRequests.remove(player.username);
                 if (requesterName == null) {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.norequest").setColor(EnumChatFormatting.RED));
                     return;
@@ -327,6 +373,7 @@ public class SkyBlockCommand extends CommandBase {
             }
             case "no": {
                 String requesterName = pendingTPARequests.remove(player.username);
+                pendingTPATIMEOUTRequests.remove(player.username);
                 if (requesterName == null) {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.norequest").setColor(EnumChatFormatting.RED));
                     return;
@@ -364,8 +411,127 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         pendingTPARequests.put(target.username, player.username);
+        pendingTPATIMEOUTRequests.put(target.username, new PendingTPARequest(player.username, System.currentTimeMillis()));
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.request_sent|name=" + target.username).setColor(EnumChatFormatting.AQUA));
         target.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.request|name=" + player.username).setColor(EnumChatFormatting.AQUA));
+    }
+
+    private static final Map<String, PendingJoin> pendingJoins = new HashMap<>();
+    private static class PendingJoin {
+        public final String member;
+        public final String owner;
+        public int ticks;
+        public PendingJoin(String member, String owner, int ticks) {
+            this.member = member;
+            this.owner = owner;
+            this.ticks = ticks;
+        }
+    }
+
+    private static class PendingTPARequest {
+        public final String requester;
+        public final long requestTimeMillis;
+        public PendingTPARequest(String requester, long requestTimeMillis) {
+            this.requester = requester;
+            this.requestTimeMillis = requestTimeMillis;
+        }
+    }
+
+    private void handleJoin(EntityPlayerMP player, String ownerName) {
+        SkyBlockPoint selfIsland = SkyBlockDataManager.getIsland(player);
+        if (selfIsland != null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.already_have_island").setColor(EnumChatFormatting.RED));
+            return;
+        }
+        for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            EntityPlayerMP onlinePlayer = (EntityPlayerMP) obj;
+            SkyBlockPoint otherIsland = SkyBlockDataManager.getIsland(onlinePlayer);
+            if (otherIsland != null && otherIsland.members.contains(player.username)) {
+                player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already_joined_join").setColor(EnumChatFormatting.RED));
+                return;
+            }
+        }
+        if (pendingJoins.containsKey(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.already_pending").setColor(EnumChatFormatting.RED));
+            return;
+        }
+        EntityPlayerMP owner = getOnlinePlayer(ownerName);
+        if (owner == null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.owner_offline|name=" + ownerName).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(owner);
+        if (island == null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.no_island|name=" + ownerName).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (island.members.contains(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.already_member|name=" + ownerName).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        pendingJoins.put(player.username, new PendingJoin(player.username, ownerName, 1200));
+        player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.request_sent|name=" + ownerName).setColor(EnumChatFormatting.YELLOW));
+        owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.request|name=" + player.username).setColor(EnumChatFormatting.AQUA));
+    }
+
+    private void handleAccept(EntityPlayerMP owner, String memberName) {
+        PendingJoin pj = pendingJoins.get(memberName);
+        if (pj == null || !pj.owner.equals(owner.username)) {
+            owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.no_request|name=" + memberName).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        pendingJoins.remove(memberName);
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(owner);
+        if (island != null) {
+            island.members.add(memberName);
+            SkyBlockDataManager.setIsland(owner, island);
+            EntityPlayerMP member = getOnlinePlayer(memberName);
+            if (member != null) {
+                member.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.accepted|name=" + owner.username).setColor(EnumChatFormatting.GREEN));
+            }
+            owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.accept_success|name=" + memberName).setColor(EnumChatFormatting.GREEN));
+        }
+    }
+
+    private void handleDeny(EntityPlayerMP owner, String memberName) {
+        PendingJoin pj = pendingJoins.get(memberName);
+        if (pj == null || !pj.owner.equals(owner.username)) {
+            owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.no_request|name=" + memberName).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        pendingJoins.remove(memberName);
+        EntityPlayerMP member = getOnlinePlayer(memberName);
+        if (member != null) {
+            member.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.denied|name=" + owner.username).setColor(EnumChatFormatting.RED));
+        }
+        owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.deny_success|name=" + memberName).setColor(EnumChatFormatting.GREEN));
+    }
+
+    private void handleRemoveMember(EntityPlayerMP player, String memberName) {
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island == null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username)
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.not_owner").setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (!island.members.contains(memberName)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.not_member|name=" + memberName)
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        island.members.remove(memberName);
+        SkyBlockDataManager.setIsland(player, island);
+        player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.success|name=" + memberName)
+                .setColor(EnumChatFormatting.GREEN));
+        EntityPlayerMP removed = getOnlinePlayer(memberName);
+        if (removed != null) {
+            removed.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.kicked|name=" + player.username)
+                    .setColor(EnumChatFormatting.RED));
+        }
     }
 
     /**
@@ -403,6 +569,9 @@ public class SkyBlockCommand extends CommandBase {
                 EntityPlayerMP player = getOnlinePlayer(entry.getKey());
                 if (player != null) {
                     SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+                    if (island == null) {
+                        island = SkyBlockDataManager.getIslandForMember(player);
+                    }
                     if (island != null && player.dimension == island.dim) {
                         player.setPositionAndUpdate(island.spawnX, island.spawnY, island.spawnZ);
                         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tp_success|name=" + player.username)
@@ -449,6 +618,38 @@ public class SkyBlockCommand extends CommandBase {
                     targetPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.tp_successed|name=" + pt.from.username).setColor(EnumChatFormatting.GREEN));
                 }
                 itTP.remove();
+            }
+        }
+        Iterator<Map.Entry<String, PendingTPARequest>> itTPA = pendingTPATIMEOUTRequests.entrySet().iterator();
+        while (itTPA.hasNext()) {
+            Map.Entry<String, PendingTPARequest> entry = itTPA.next();
+            if (System.currentTimeMillis() - entry.getValue().requestTimeMillis > 60_000) {
+                EntityPlayerMP target = getOnlinePlayer(entry.getKey());
+                EntityPlayerMP requester = getOnlinePlayer(entry.getValue().requester);
+                if (requester != null) {
+                    requester.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.timeout|name=" + entry.getKey()).setColor(EnumChatFormatting.RED));
+                }
+                if (target != null) {
+                    target.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.timeout_notice|name=" + entry.getValue().requester).setColor(EnumChatFormatting.RED));
+                }
+                itTPA.remove();
+            }
+        }
+        Iterator<Map.Entry<String, PendingJoin>> itJoin = pendingJoins.entrySet().iterator();
+        while (itJoin.hasNext()) {
+            Map.Entry<String, PendingJoin> e = itJoin.next();
+            PendingJoin pj = e.getValue();
+            pj.ticks--;
+            if (pj.ticks <= 0) {
+                EntityPlayerMP member = getOnlinePlayer(pj.member);
+                EntityPlayerMP owner = getOnlinePlayer(pj.owner);
+                if (member != null) {
+                    member.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.timeout|name=" + pj.owner).setColor(EnumChatFormatting.RED));
+                }
+                if (owner != null) {
+                    owner.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.timeout_notice|name=" + pj.member).setColor(EnumChatFormatting.RED));
+                }
+                itJoin.remove();
             }
         }
     }
