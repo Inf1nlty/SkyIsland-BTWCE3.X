@@ -1,9 +1,6 @@
 package com.inf1nlty.skyblock.util;
 
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
+import net.minecraft.src.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +32,31 @@ public class SkyBlockDataManager {
         return null;
     }
 
+    public static Iterable<SkyBlockPoint> getAllIslands() {
+        return playerIslands.values();
+    }
+
+    public static void checkSkyBlockProtection(World world) {
+        for (Object obj : world.playerEntities) {
+            EntityPlayerMP player = (EntityPlayerMP) obj;
+             if (player.capabilities.isCreativeMode) continue;
+            for (SkyBlockPoint island : SkyBlockDataManager.getAllIslands()) {
+                if (!island.protectEnabled) continue;
+                if (player.username.equals(island.owner) || island.members.contains(player.username)) continue;
+                if (player.dimension != island.dim) continue;
+                if (island.isInProtectRegion(player)) {
+                    double kickRadius = 33.0;
+                    double angle = Math.atan2(player.posZ - island.initSpawnZ, player.posX - island.initSpawnX);
+                    double newX = island.initSpawnX + Math.cos(angle) * kickRadius;
+                    double newZ = island.initSpawnZ + Math.sin(angle) * kickRadius;
+                    player.setPositionAndUpdate(newX, player.posY, newZ);
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protection.kicked").setColor(EnumChatFormatting.RED));
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * Writes the player's island data to NBT.
      */
@@ -50,12 +72,16 @@ public class SkyBlockDataManager {
         islandTag.setDouble("spawnX", ip.spawnX);
         islandTag.setDouble("spawnY", ip.spawnY);
         islandTag.setDouble("spawnZ", ip.spawnZ);
+        islandTag.setDouble("initSpawnX", ip.initSpawnX);
+        islandTag.setDouble("initSpawnY", ip.initSpawnY);
+        islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         islandTag.setBoolean("pendingDelete", ip.pendingDelete);
         islandTag.setLong("pendingDeleteTime", ip.pendingDeleteTime);
         NBTTagList memberList = new NBTTagList();
         for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
         islandTag.setTag("members", memberList);
+        islandTag.setBoolean("protectEnabled", ip.protectEnabled);
         tag.setTag("SkyIsland", islandTag);
     }
 
@@ -82,9 +108,13 @@ public class SkyBlockDataManager {
         ip.spawnX = islandTag.getDouble("spawnX");
         ip.spawnY = islandTag.getDouble("spawnY");
         ip.spawnZ = islandTag.getDouble("spawnZ");
+        ip.initSpawnX = islandTag.getDouble("initSpawnX");
+        ip.initSpawnY = islandTag.getDouble("initSpawnY");
+        ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
+        ip.protectEnabled = islandTag.hasKey("protectEnabled") && islandTag.getBoolean("protectEnabled");
         if (islandTag.hasKey("members")) {
             NBTTagList memberList = islandTag.getTagList("members");
             for (int i = 0; i < memberList.tagCount(); i++) {

@@ -1,5 +1,7 @@
 package com.inf1nlty.skyblock.util;
 
+import net.minecraft.src.EntityPlayer;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,11 +10,13 @@ import java.util.Set;
  */
 public class SkyBlockPoint {
     public final int x, y, z, dim;
+    public double initSpawnX, initSpawnY, initSpawnZ;
     public final String owner;
     public Set<String> members = new HashSet<>();
     public double spawnX, spawnY, spawnZ;
     public boolean tpaEnabled = true;
     public boolean pendingDelete = false;
+    public boolean protectEnabled;
     public long pendingDeleteTime = 0;
 
     public SkyBlockPoint(String owner, int x, int y, int z, int dim) {
@@ -24,5 +28,15 @@ public class SkyBlockPoint {
         this.spawnX = x + SkyBlockManager.SPAWN_X_OFFSET;
         this.spawnY = y + SkyBlockManager.SPAWN_Y_OFFSET;
         this.spawnZ = z + SkyBlockManager.SPAWN_Z_OFFSET;
+        this.initSpawnX = this.spawnX;
+        this.initSpawnY = this.spawnY;
+        this.initSpawnZ = this.spawnZ;
+        this.protectEnabled = false;
+    }
+
+    public boolean isInProtectRegion(EntityPlayer player) {
+        double dx = Math.abs(player.posX - this.initSpawnX);
+        double dz = Math.abs(player.posZ - this.initSpawnZ);
+        return dx <= 30.0 && dz <= 30.0;
     }
 }

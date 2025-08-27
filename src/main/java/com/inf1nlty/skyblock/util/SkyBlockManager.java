@@ -125,7 +125,7 @@ public class SkyBlockManager {
 
     public static void generateIsland(World world, SkyBlockPoint island) {
         int baseX = (int)(island.x + ISLAND_X_OFFSET);
-        int baseY = (int)(island.y + ISLAND_Y_OFFSET);;
+        int baseY = (int)(island.y + ISLAND_Y_OFFSET);
         int baseZ = (int)(island.z + ISLAND_Z_OFFSET);
 
         SchematicData schematic = SchematicData.loadSchematic(SCHEMATIC_PATH);
@@ -177,12 +177,16 @@ public class SkyBlockManager {
         islandTag.setDouble("spawnX", ip.spawnX);
         islandTag.setDouble("spawnY", ip.spawnY);
         islandTag.setDouble("spawnZ", ip.spawnZ);
+        islandTag.setDouble("initSpawnX", ip.initSpawnX);
+        islandTag.setDouble("initSpawnY", ip.initSpawnY);
+        islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         islandTag.setBoolean("pendingDelete", ip.pendingDelete);
         islandTag.setLong("pendingDeleteTime", ip.pendingDeleteTime);
         NBTTagList memberList = new NBTTagList();
         for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
         islandTag.setTag("members", memberList);
+        islandTag.setBoolean("protectEnabled", ip.protectEnabled);
         tag.setTag("SkyIsland", islandTag);
     }
 
@@ -200,9 +204,13 @@ public class SkyBlockManager {
         ip.spawnX = islandTag.getDouble("spawnX");
         ip.spawnY = islandTag.getDouble("spawnY");
         ip.spawnZ = islandTag.getDouble("spawnZ");
+        ip.initSpawnX = islandTag.getDouble("initSpawnX");
+        ip.initSpawnY = islandTag.getDouble("initSpawnY");
+        ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
+        ip.protectEnabled = islandTag.hasKey("protectEnabled") && islandTag.getBoolean("protectEnabled");
         if (islandTag.hasKey("members")) {
             NBTTagList memberList = islandTag.getTagList("members");
             for (int i = 0; i < memberList.tagCount(); i++) {

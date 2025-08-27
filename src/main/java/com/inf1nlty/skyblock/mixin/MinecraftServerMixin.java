@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin;
 
 import com.inf1nlty.skyblock.command.SkyBlockCommand;
+import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.WorldServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,5 +16,6 @@ public class MinecraftServerMixin {
 
         WorldServer world = MinecraftServer.getServer().worldServers[0];
         SkyBlockCommand.onServerTick(world);
+        SkyBlockDataManager.checkSkyBlockProtection(world);
     }
 }

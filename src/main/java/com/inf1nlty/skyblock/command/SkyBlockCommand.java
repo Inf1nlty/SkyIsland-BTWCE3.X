@@ -59,45 +59,106 @@ public class SkyBlockCommand extends CommandBase {
         // Provide completion for subcommands and tpa targets
         if (!(sender instanceof EntityPlayerMP player)) return Collections.emptyList();
         if (args.length == 1) {
-            String sub = args[0].toLowerCase();
-            List<String> names = new ArrayList<>();
-            for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
-                EntityPlayerMP target = (EntityPlayerMP) obj;
-                if (!target.username.equalsIgnoreCase(player.username) &&
-                        target.username.toLowerCase().startsWith(sub)) {
-                    names.add(target.username);
-                }
-            }
-            if ("info".startsWith(sub)) names.add("info");
-            if ("new".startsWith(sub)) names.add("new");
-            if ("delete".startsWith(sub)) names.add("delete");
-            if ("setspawn".startsWith(sub)) names.add("setspawn");
-            if ("tpa".startsWith(sub)) names.add("tpa");
-            if ("yes".startsWith(sub)) names.add("yes");
-            if ("no".startsWith(sub)) names.add("no");
-            if ("setyes".startsWith(sub)) names.add("setyes");
-            if ("setno".startsWith(sub)) names.add("setno");
-            if ("confirm".startsWith(sub)) names.add("confirm");
-            return names;
+            return getStrings(args, player);
         }
         // For /island tpa <player>|yes|no|setyes|setno
         if (args.length == 2 && args[0].equalsIgnoreCase("tpa")) {
-            String sub = args[1].toLowerCase();
-            List<String> names = new ArrayList<>();
-            for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
-                EntityPlayerMP target = (EntityPlayerMP) obj;
-                if (!target.username.equalsIgnoreCase(player.username) &&
-                        target.username.toLowerCase().startsWith(sub)) {
-                    names.add(target.username);
+            return getStringList(args, player);
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("j")) {
+            return getPlayerNameCompletions(player, args[1]);
+        }
+
+        if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("r"))) {
+            SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+            if (island != null && !island.members.isEmpty()) {
+                String prefix = args[1].toLowerCase();
+                List<String> members = new ArrayList<>();
+                for (String member : island.members) {
+                    if (member.toLowerCase().startsWith(prefix)) {
+                        members.add(member);
+                    }
+                }
+                return members;
+            }
+            return Collections.emptyList();
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("deny")) {
+            List<String> pending = new ArrayList<>();
+            String prefix = args[1].toLowerCase();
+            for (Map.Entry<String, PendingJoin> entry : pendingJoins.entrySet()) {
+                PendingJoin pj = entry.getValue();
+                if (pj.owner.equals(player.username) && pj.member.toLowerCase().startsWith(prefix)) {
+                    pending.add(pj.member);
                 }
             }
-            if ("yes".startsWith(sub)) names.add("yes");
-            if ("no".startsWith(sub)) names.add("no");
-            if ("setyes".startsWith(sub)) names.add("setyes");
-            if ("setno".startsWith(sub)) names.add("setno");
-            return names;
+            return pending;
+        }
+        if (args.length == 2 && (args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("a"))) {
+            List<String> pending = new ArrayList<>();
+            String prefix = args[1].toLowerCase();
+            for (Map.Entry<String, PendingJoin> entry : pendingJoins.entrySet()) {
+                PendingJoin pj = entry.getValue();
+                if (pj.owner.equals(player.username) && pj.member.toLowerCase().startsWith(prefix)) {
+                    pending.add(pj.member);
+                }
+            }
+            return pending;
         }
         return Collections.emptyList();
+    }
+
+    private static List<String> getStringList(String[] args, EntityPlayerMP player) {
+        String sub = args[1].toLowerCase();
+        List<String> names = new ArrayList<>();
+        for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            EntityPlayerMP target = (EntityPlayerMP) obj;
+            if (!target.username.equalsIgnoreCase(player.username) &&
+                    target.username.toLowerCase().startsWith(sub)) {
+                names.add(target.username);
+            }
+        }
+        if ("yes".startsWith(sub)) names.add("yes");
+        if ("no".startsWith(sub)) names.add("no");
+        if ("setyes".startsWith(sub)) names.add("setyes");
+        if ("setno".startsWith(sub)) names.add("setno");
+        return names;
+    }
+
+    private static List<String> getStrings(String[] args, EntityPlayerMP player) {
+        String sub = args[0].toLowerCase();
+        List<String> names = new ArrayList<>();
+        for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            EntityPlayerMP target = (EntityPlayerMP) obj;
+            if (!target.username.equalsIgnoreCase(player.username) &&
+                    target.username.toLowerCase().startsWith(sub)) {
+                names.add(target.username);
+            }
+        }
+        if ("info".startsWith(sub)) names.add("info");
+        if ("new".startsWith(sub)) names.add("new");
+        if ("delete".startsWith(sub)) names.add("delete");
+        if ("setspawn".startsWith(sub)) names.add("setspawn");
+        if ("tpa".startsWith(sub)) names.add("tpa");
+        if ("yes".startsWith(sub)) names.add("yes");
+        if ("no".startsWith(sub)) names.add("no");
+        if ("setyes".startsWith(sub)) names.add("setyes");
+        if ("setno".startsWith(sub)) names.add("setno");
+        return names;
+    }
+
+    private List<String> getPlayerNameCompletions(EntityPlayerMP current, String prefix) {
+        List<String> names = new ArrayList<>();
+        for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+            EntityPlayerMP target = (EntityPlayerMP) obj;
+            if (!target.username.equalsIgnoreCase(current.username) &&
+                    target.username.toLowerCase().startsWith(prefix.toLowerCase())) {
+                names.add(target.username);
+            }
+        }
+        return names;
     }
 
     @Override
@@ -164,6 +225,20 @@ public class SkyBlockCommand extends CommandBase {
             case "setno":
                 handleTPA(player, sub);
                 break;
+            case "protect":
+            case "p":
+                if (args.length >= 2) {
+                    if (args[1].equalsIgnoreCase("on")) {
+                        handleProtectToggle(player, true);
+                    } else if (args[1].equalsIgnoreCase("off")) {
+                        handleProtectToggle(player, false);
+                    } else {
+                        player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protect.usage").setColor(EnumChatFormatting.YELLOW));
+                    }
+                } else {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protect.usage").setColor(EnumChatFormatting.YELLOW));
+                }
+                break;
             case "join":
             case "j":
                 if (args.length >= 2) {
@@ -187,9 +262,6 @@ public class SkyBlockCommand extends CommandBase {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.join.deny.usage").setColor(EnumChatFormatting.YELLOW));
                 }
                 break;
-            default:
-                handleInfo(player);
-                break;
             case "remove":
             case "r":
                 if (args.length >= 2) {
@@ -197,6 +269,9 @@ public class SkyBlockCommand extends CommandBase {
                 } else {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.usage").setColor(EnumChatFormatting.YELLOW));
                 }
+                break;
+            default:
+                handleInfo(player);
                 break;
         }
     }
@@ -303,8 +378,8 @@ public class SkyBlockCommand extends CommandBase {
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        double dx = Math.abs(player.posX - island.spawnX);
-        double dz = Math.abs(player.posZ - island.spawnZ);
+        double dx = Math.abs(player.posX - island.initSpawnX);
+        double dz = Math.abs(player.posZ - island.initSpawnX);
         if (dx > SPAWN_LIMIT_DISTANCE || dz > SPAWN_LIMIT_DISTANCE) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.setspawn.out_of_bounds|radius=" + SPAWN_LIMIT_DISTANCE)
                     .setColor(EnumChatFormatting.RED));
@@ -435,6 +510,22 @@ public class SkyBlockCommand extends CommandBase {
             this.requester = requester;
             this.requestTimeMillis = requestTimeMillis;
         }
+    }
+
+    private void handleProtectToggle(EntityPlayerMP player, boolean enable) {
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island == null) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username).setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protect.not_owner").setColor(EnumChatFormatting.RED));
+            return;
+        }
+        island.protectEnabled = enable;
+        SkyBlockDataManager.setIsland(player, island);
+        player.sendChatToPlayer(ChatMessageComponent.createFromText(
+                enable ? "commands.island.protect.enabled" : "commands.island.protect.disabled").setColor(EnumChatFormatting.GREEN));
     }
 
     private void handleJoin(EntityPlayerMP player, String ownerName) {
