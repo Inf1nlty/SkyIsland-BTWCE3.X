@@ -1,3 +1,8 @@
 accessWidener v1 named
 accessible field net/minecraft/src/EntityPlayer username Ljava/lang/String;
 accessible field net/minecraft/src/EntityPlayer spawnChunk Lnet/minecraft/src/ChunkCoordinates;
+accessible field net/minecraft/src/GuiScreen buttonList Ljava/util/List;
+accessible field net/minecraft/src/ChunkProviderGenerate worldObj Lnet/minecraft/src/World;
+accessible field net/minecraft/src/ChunkProviderGenerate biomesForGeneration [Lnet/minecraft/src/BiomeGenBase;
+accessible field net/minecraft/src/ChunkProviderGenerate strongholdGenerator Lnet/minecraft/src/MapGenStronghold;
+accessible field net/minecraft/src/ChunkProviderGenerate rand Ljava/util/Random;

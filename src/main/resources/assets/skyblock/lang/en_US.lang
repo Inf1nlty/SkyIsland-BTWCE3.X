@@ -66,3 +66,5 @@ commands.island.remove.not_owner=You are not the island owner and cannot remove 
 commands.island.remove.not_member=Member {name} is not on your island.
 commands.island.remove.success=Successfully removed member {name}
 commands.island.remove.kicked=You have been removed from the island by {name}.
+island.createworld.skyblock=Skyblock World
+island.createworld.selected=Skyblock World ✔

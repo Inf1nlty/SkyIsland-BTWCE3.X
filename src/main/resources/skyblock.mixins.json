@@ -6,10 +6,15 @@
   "mixins": [
     "EntityPlayerMixin",
     "EntityPlayerMPMixin",
+    "HardcoreSpawnUtilsMixin",
     "MinecraftServerMixin",
-    "WorldInfoMixin"
+    "ServerConfigurationManagerMixin",
+    "WorldInfoMixin",
+    "WorldProviderMixin",
+    "WorldServerMixin"
   ],
   "client": [
+    "GuiCreateWorldMixin",
     "client.GuiNewChatMixin"
   ],
   "injectors": {

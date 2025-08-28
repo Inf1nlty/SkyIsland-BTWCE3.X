@@ -1,8 +1,11 @@
 package com.inf1nlty.skyblock.mixin;
 
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.ItemInWorldManager;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(EntityPlayerMP.class)
 public class EntityPlayerMPMixin {
+
     /**
      * Write multiplayer island data to NBT after vanilla write.
      */
@@ -27,5 +31,12 @@ public class EntityPlayerMPMixin {
     @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
     public void readIslandData(NBTTagCompound tag, CallbackInfo ci) {
         SkyBlockDataManager.readIslandFromNBT((EntityPlayerMP)(Object)this, tag);
+    }
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void forceVoidWorldPlayerSpawn(MinecraftServer par1MinecraftServer, World par2World, String par3Str, ItemInWorldManager par4ItemInWorldManager, CallbackInfo ci) {
+        if ("voidworld".equals(par2World.getWorldInfo().getGeneratorOptions())) {
+            ((EntityPlayerMP)(Object)this).setLocationAndAngles(0.5, 101.0, 0.5, 0.0F, 0.0F);
+        }
     }
 }

@@ -66,3 +66,5 @@ commands.island.remove.not_owner=你不是岛主，不能移除成员。
 commands.island.remove.not_member=成员 {name} 不在你的岛屿内。
 commands.island.remove.success=成功移除成员 {name}
 commands.island.remove.kicked=你已被 {name} 移出岛屿。
+island.createworld.voidworld=虚空世界
+island.createworld.selected=虚空世界 ✔
