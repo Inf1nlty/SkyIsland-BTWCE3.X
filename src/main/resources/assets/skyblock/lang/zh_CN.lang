@@ -66,5 +66,17 @@ commands.island.remove.not_owner=你不是岛主，不能移除成员。
 commands.island.remove.not_member=成员 {name} 不在你的岛屿内。
 commands.island.remove.success=成功移除成员 {name}
 commands.island.remove.kicked=你已被 {name} 移出岛屿。
-island.createworld.voidworld=虚空世界
-island.createworld.selected=虚空世界 ✔
+
+island.createworld.voidworld=虚空世界： §c关
+island.createworld.selected=虚空世界： §a开
+
+commands.island.taunt.1=[SkyBlock] {name}又一次重开空岛，执着得令人感动！
+commands.island.taunt.2=[SkyBlock] {name}的空岛复制机再次启动，大家快来看戏！
+commands.island.taunt.3=[SkyBlock] {name}，你这是第几次毁灭世界了？
+commands.island.taunt.4=[SkyBlock] 又是{name}，又一个新的孤岛，又一次新的开始...
+commands.island.taunt.5=[SkyBlock] 全服注意：{name}又双叒叕回到了原点！
+commands.island.taunt.6=[SkyBlock] {name}的重开速度已经突破天际！
+commands.island.taunt.7=[SkyBlock] 提示：{name}的岛屿又要重建了！
+commands.island.taunt.8=[SkyBlock] 你们有没有发现，{name}特别喜欢重置挑战...
+commands.island.taunt.9=[SkyBlock] {name}，你是不是忘记怎么经营岛屿了？
+commands.island.taunt.10=[SkyBlock] 一键重开空岛，{name}专属技能，羡慕不？

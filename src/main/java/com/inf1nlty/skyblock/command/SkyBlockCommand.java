@@ -379,7 +379,7 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         double dx = Math.abs(player.posX - island.initSpawnX);
-        double dz = Math.abs(player.posZ - island.initSpawnX);
+        double dz = Math.abs(player.posZ - island.initSpawnZ);
         if (dx > SPAWN_LIMIT_DISTANCE || dz > SPAWN_LIMIT_DISTANCE) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.setspawn.out_of_bounds|radius=" + SPAWN_LIMIT_DISTANCE)
                     .setColor(EnumChatFormatting.RED));
@@ -637,6 +637,7 @@ public class SkyBlockCommand extends CommandBase {
             if (ticks <= 0) {
                 EntityPlayerMP player = getOnlinePlayer(entry.getKey());
                 if (player != null && SkyBlockDataManager.getIsland(player) == null) {
+                    boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
                     SkyBlockPoint island = SkyBlockManager.makeIsland(player, (WorldServer) world);
                     SkyBlockDataManager.setIsland(player, island);
                     SkyBlockManager.generateIsland(world, island);
@@ -645,6 +646,20 @@ public class SkyBlockCommand extends CommandBase {
                             .setColor(EnumChatFormatting.GREEN));
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tp_wait|name=" + player.username)
                             .setColor(EnumChatFormatting.YELLOW));
+                    if (everCreated) {
+                        String[] tauntKeys = {
+                                "commands.island.taunt.1", "commands.island.taunt.2", "commands.island.taunt.3",
+                                "commands.island.taunt.4", "commands.island.taunt.5", "commands.island.taunt.6",
+                                "commands.island.taunt.7", "commands.island.taunt.8", "commands.island.taunt.9",
+                                "commands.island.taunt.10"
+                        };
+                        String tauntKey = tauntKeys[(int) (Math.random() * tauntKeys.length)];
+                        String tauntMsg = StatCollector.translateToLocal(tauntKey).replace("{name}", player.username);
+                        for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+                            EntityPlayerMP target = (EntityPlayerMP) obj;
+                            target.sendChatToPlayer(ChatMessageComponent.createFromText(tauntMsg).setColor(EnumChatFormatting.LIGHT_PURPLE));
+                        }
+                    }
                 }
                 itCreate.remove();
             } else {

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class SkyBlockManager {
 
-    public static final int ISLAND_Y = 65;
+    public static final int ISLAND_Y = 100;
     public static final double ISLAND_X_OFFSET = 0;
     public static final double ISLAND_Y_OFFSET = -19;
     public static final double ISLAND_Z_OFFSET = 0;
@@ -204,9 +204,9 @@ public class SkyBlockManager {
         ip.spawnX = islandTag.getDouble("spawnX");
         ip.spawnY = islandTag.getDouble("spawnY");
         ip.spawnZ = islandTag.getDouble("spawnZ");
-        ip.initSpawnX = islandTag.getDouble("initSpawnX");
-        ip.initSpawnY = islandTag.getDouble("initSpawnY");
-        ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
+        ip.initSpawnX = islandTag.hasKey("initSpawnX") ? islandTag.getDouble("initSpawnX") : islandTag.getDouble("spawnX");
+        ip.initSpawnY = islandTag.hasKey("initSpawnY") ? islandTag.getDouble("initSpawnY") : islandTag.getDouble("spawnY");
+        ip.initSpawnZ = islandTag.hasKey("initSpawnZ") ? islandTag.getDouble("initSpawnZ") : islandTag.getDouble("spawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");

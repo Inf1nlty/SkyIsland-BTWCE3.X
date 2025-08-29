@@ -66,5 +66,17 @@ commands.island.remove.not_owner=You are not the island owner and cannot remove 
 commands.island.remove.not_member=Member {name} is not on your island.
 commands.island.remove.success=Successfully removed member {name}
 commands.island.remove.kicked=You have been removed from the island by {name}.
-island.createworld.skyblock=Skyblock World
-island.createworld.selected=Skyblock World ✔
+
+island.createworld.voidworld=Skyblock World: §cOff
+island.createworld.selected=Skyblock World: §aOn
+
+commands.island.taunt.1={name} is starting another island again. Such dedication!
+commands.island.taunt.2=The Skyblock repeater {name} has rebooted. Grab your popcorn!
+commands.island.taunt.3=How many times have you destroyed your world now, {name}?
+commands.island.taunt.4=It's {name} again, a new island, a new journey...
+commands.island.taunt.5=Attention: {name} has reset to the beginning, once again!
+commands.island.taunt.6={name}'s restart speed has reached a new record!
+commands.island.taunt.7=Notice: {name} is rebuilding their island—again!
+commands.island.taunt.8=Has anyone noticed that {name} loves resetting challenges?
+commands.island.taunt.9={name}, did you forget how to manage your island?
+commands.island.taunt.10=Instant island reset, {name}'s exclusive skill. Impressive!

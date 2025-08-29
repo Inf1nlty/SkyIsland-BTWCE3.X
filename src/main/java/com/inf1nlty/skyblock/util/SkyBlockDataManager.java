@@ -3,16 +3,23 @@ package com.inf1nlty.skyblock.util;
 import net.minecraft.src.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Handles island data persistence and retrieval.
  */
 public class SkyBlockDataManager {
     private static final Map<String, SkyBlockPoint> playerIslands = new HashMap<>();
+    private static final Set<String> everCreatedIslanders = new HashSet<>();
 
     public static SkyBlockPoint getIsland(EntityPlayerMP player) {
         return playerIslands.get(player.username);
+    }
+
+    public static boolean hasEverCreatedIsland(String username) {
+        return everCreatedIslanders.contains(username);
     }
 
     public static void setIsland(EntityPlayerMP player, SkyBlockPoint ip) {
@@ -20,6 +27,7 @@ public class SkyBlockDataManager {
             playerIslands.remove(player.username);
         } else {
             playerIslands.put(player.username, ip);
+            everCreatedIslanders.add(player.username);
         }
     }
 
@@ -108,9 +116,9 @@ public class SkyBlockDataManager {
         ip.spawnX = islandTag.getDouble("spawnX");
         ip.spawnY = islandTag.getDouble("spawnY");
         ip.spawnZ = islandTag.getDouble("spawnZ");
-        ip.initSpawnX = islandTag.getDouble("initSpawnX");
-        ip.initSpawnY = islandTag.getDouble("initSpawnY");
-        ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
+        ip.initSpawnX = islandTag.hasKey("initSpawnX") ? islandTag.getDouble("initSpawnX") : islandTag.getDouble("spawnX");
+        ip.initSpawnY = islandTag.hasKey("initSpawnY") ? islandTag.getDouble("initSpawnY") : islandTag.getDouble("spawnY");
+        ip.initSpawnZ = islandTag.hasKey("initSpawnZ") ? islandTag.getDouble("initSpawnZ") : islandTag.getDouble("spawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.pendingDelete = islandTag.getBoolean("pendingDelete");
         ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
@@ -125,6 +133,16 @@ public class SkyBlockDataManager {
         String newKey = ip.dim + ":" + ip.x + ":" + ip.z;
         if (!SkyBlockManager.isUsedIslandPosition(newKey)) {
             SkyBlockManager.addUsedIslandPosition(newKey);
+        }
+    }
+
+    public static void writeHistoryToNBT(EntityPlayerMP player, NBTTagCompound tag) {
+        tag.setBoolean("hasEverCreatedIsland", everCreatedIslanders.contains(player.username));
+    }
+
+    public static void readHistoryFromNBT(EntityPlayerMP player, NBTTagCompound tag) {
+        if (tag.hasKey("hasEverCreatedIsland") && tag.getBoolean("hasEverCreatedIsland")) {
+            everCreatedIslanders.add(player.username);
         }
     }
 }

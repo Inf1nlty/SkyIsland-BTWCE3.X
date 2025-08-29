@@ -50,6 +50,35 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
     private static final int SIGN_NORTH_BEDROCK_Z = -6;
     private static final int SIGN_NORTH_META = 3;
 
+    // South,Right-Left
+    private static final String[][] SIGN_SOUTH_TEXTS = {
+            {"", "", "", ""},
+            {"/is j '玩家名'申请加入他人岛屿", "/is r 玩家名移除成员", "/is a/deny 玩家名同意/拒绝", "均支持自动补全名字"},
+            {"/is s 设置岛屿传送点", "X/Z各30格限制", "/is p on/off 切换保护", "非成员靠近将被弹出"},
+            {"/is setyes/setno", "开关传送请求", "默认开启", ""},
+            {"/is tp 请求传送", "到其他玩家空岛", "/is yes/no", "同意或拒绝请求"},
+            {"/is i 查询信息", "/is d 删除空岛", "然后需要在60秒内输入", "/is d c 以确认"},
+            {"/is n 创建岛屿", "/is 返回岛屿", "需已创建或加入", ""},
+            {"本模组大部分指令可简写", "如 /is /is n /is j 等", "", ""},
+            {"在虚空世界里","主世界全是空气", "不会生成建筑", "但拥有正常群系"},
+            {"欢迎来到", "虚空世界", "请勿在出生点捣乱", "谢谢"}
+    };
+
+    // North,Left-Right
+    private static final String[][] SIGN_NORTH_TEXTS = {
+            {"Welcome to", "Void World", "please don’t mess up", "in the spawn area"},
+            {"In the void world","the overworld is all air", "no structures will generate", "but biomes are normal"},
+            {"Most commands support", "initial letter shortcuts", "like /is /is n /is j", ""},
+            {"/is n to create", "/is to return", "must have created or joined", "an island"},
+            {"/is i to view info", "/is d to delete", "/is d c to confirm", ""},
+            {"/is tp to request", "teleport to another island", "/is yes/no", "to accept or decline"},
+            {"/is setyes/setno to toggle", "teleport requests", "enabled by default", ""},
+            {"/is s to set island tp-point", "limited to 30 blocks X/Z", "/is p on/off to toggle protection", "non-members will be ejected"},
+            {"/is j 'name' to request to join", "/is r 'name' to remove member", "/is a/deny player to accept/deny", "name auto-completion supported"},
+            {"", "", "", ""},
+            {"", "", "", ""}
+    };
+
     @Override
     public void generateTerrain(int chunkX, int chunkZ, byte[] blockArray) {
         if (this.worldObj.provider.dimensionId == 0) {
@@ -148,11 +177,12 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
             // 南墙一排告示牌
             for (int signX = -5; signX <= 4; signX++) {
+                int idx = signX + 5; // x:-5~4 => idx:0~9
                 if ((signX >> 4) == chunkX && (SIGN_SOUTH_WALL_Z >> 4) == chunkZ) {
                     int localX = signX & 15;
                     int localZ = SIGN_SOUTH_WALL_Z & 15;
                     int bedrockLocalZ = SIGN_SOUTH_BEDROCK_Z & 15;
-                    int localY = SIGN_Y;
+                    int localY = SIGN_Y + (idx % 2);
                     int storageIdx = localY >> 4;
                     int yInStorage = localY & 15;
                     if (chunk.getBlockStorageArray()[storageIdx] == null) {
@@ -168,12 +198,12 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                         TileEntitySign sign = new TileEntitySign();
                         sign.setWorldObj(worldObj);
                         sign.xCoord = signX;
-                        sign.yCoord = SIGN_Y;
+                        sign.yCoord = SIGN_Y + (idx % 2);
                         sign.zCoord = SIGN_SOUTH_WALL_Z;
-                        sign.signText[0] = "虚空世界";
-                        sign.signText[1] = "欢迎挑战";
-                        sign.signText[2] = "By Inf1nlty";
-                        sign.signText[3] = "";
+                        sign.signText[0] = SIGN_SOUTH_TEXTS[idx][0];
+                        sign.signText[1] = SIGN_SOUTH_TEXTS[idx][1];
+                        sign.signText[2] = SIGN_SOUTH_TEXTS[idx][2];
+                        sign.signText[3] = SIGN_SOUTH_TEXTS[idx][3];
                         chunk.addTileEntity(sign);
                     }
                 }
@@ -181,11 +211,12 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
             // 北墙一排告示牌
             for (int signX = -5; signX <= 4; signX++) {
+                int idx = signX + 5; // x:-5~4 => idx:0~9
                 if ((signX >> 4) == chunkX && (SIGN_NORTH_WALL_Z >> 4) == chunkZ) {
                     int localX = signX & 15;
                     int localZ = SIGN_NORTH_WALL_Z & 15;
                     int bedrockLocalZ = SIGN_NORTH_BEDROCK_Z & 15;
-                    int localY = SIGN_Y;
+                    int localY = SIGN_Y + (idx % 2);
                     int storageIdx = localY >> 4;
                     int yInStorage = localY & 15;
                     if (chunk.getBlockStorageArray()[storageIdx] == null) {
@@ -201,12 +232,12 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                         TileEntitySign sign = new TileEntitySign();
                         sign.setWorldObj(worldObj);
                         sign.xCoord = signX;
-                        sign.yCoord = SIGN_Y;
+                        sign.yCoord = SIGN_Y + (idx % 2);
                         sign.zCoord = SIGN_NORTH_WALL_Z;
-                        sign.signText[0] = "虚空世界";
-                        sign.signText[1] = "欢迎挑战";
-                        sign.signText[2] = "By Inf1nlty";
-                        sign.signText[3] = "";
+                        sign.signText[0] = SIGN_NORTH_TEXTS[idx][0];
+                        sign.signText[1] = SIGN_NORTH_TEXTS[idx][1];
+                        sign.signText[2] = SIGN_NORTH_TEXTS[idx][2];
+                        sign.signText[3] = SIGN_NORTH_TEXTS[idx][3];
                         chunk.addTileEntity(sign);
                     }
                 }

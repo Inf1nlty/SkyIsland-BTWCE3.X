@@ -22,7 +22,9 @@ public class EntityPlayerMPMixin {
      */
     @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
     public void writeIslandData(NBTTagCompound tag, CallbackInfo ci) {
-        SkyBlockDataManager.writeIslandToNBT((EntityPlayerMP)(Object)this, tag);
+        EntityPlayerMP player = (EntityPlayerMP)(Object)this;
+        SkyBlockDataManager.writeIslandToNBT(player, tag);
+        SkyBlockDataManager.writeHistoryToNBT(player, tag);
     }
 
     /**
@@ -30,7 +32,9 @@ public class EntityPlayerMPMixin {
      */
     @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
     public void readIslandData(NBTTagCompound tag, CallbackInfo ci) {
-        SkyBlockDataManager.readIslandFromNBT((EntityPlayerMP)(Object)this, tag);
+        EntityPlayerMP player = (EntityPlayerMP)(Object)this;
+        SkyBlockDataManager.readIslandFromNBT(player, tag);
+        SkyBlockDataManager.readHistoryFromNBT(player, tag);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
