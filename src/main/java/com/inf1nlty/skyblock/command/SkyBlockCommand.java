@@ -20,10 +20,28 @@ import java.util.*;
  */
 public class SkyBlockCommand extends CommandBase {
 
+//    private static Boolean hasShopMod = null;
+//    private static java.lang.reflect.Method getBalanceTenths = null;
+//    private static java.lang.reflect.Method addTenths = null;
+//
+//    private static boolean checkShopMod() {
+//        if (hasShopMod == null) {
+//            try {
+//                Class<?> moneyManagerClass = Class.forName("com.inf1nlty.shop.util.MoneyManager");
+//                getBalanceTenths = moneyManagerClass.getMethod("getBalanceTenths", EntityPlayer.class);
+//                addTenths = moneyManagerClass.getMethod("addTenths", EntityPlayer.class, int.class);
+//                hasShopMod = true;
+//            } catch (Exception e) {
+//                hasShopMod = false;
+//            }
+//        }
+//        return hasShopMod;
+//    }
+
     // State for delayed creation and deletion, and tpa requests
     private static final Map<String, Integer> pendingIslandTeleports = new HashMap<>();
     private static final Map<String, Integer> pendingCreate = new HashMap<>();
-    private static final Map<String, String> pendingDeleteRequests = new HashMap<>();
+    private static final Map<String, Long> pendingDeleteRequests = new HashMap<>();
     private static final Map<String, String> pendingTPARequests = new HashMap<>();
     private static final Map<String, PendingTeleport> pendingTeleports = new HashMap<>();
     private static final Map<String, PendingTPARequest> pendingTPATIMEOUTRequests = new HashMap<>();
@@ -324,6 +342,25 @@ public class SkyBlockCommand extends CommandBase {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.already_joined_create").setColor(EnumChatFormatting.RED));
             return;
         }
+
+//        boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
+//        if (everCreated && checkShopMod()) {
+//            try {
+//                int balance = (int)getBalanceTenths.invoke(null, player);
+//                if (balance < 5000) {
+//                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.new.not_enough_money|cost=500")
+//                            .setColor(EnumChatFormatting.RED));
+//                    return;
+//                }
+//                addTenths.invoke(null, player, -5000);
+//                player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.new.cost_paid|amount=500")
+//                        .setColor(EnumChatFormatting.YELLOW));
+//            } catch (Exception e) {
+//                player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.new.shopmod_error")
+//                        .setColor(EnumChatFormatting.RED));
+//            }
+//        }
+
         pendingCreate.put(player.username, 60);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.create.wait|name=" + player.username)
                 .setColor(EnumChatFormatting.YELLOW));
@@ -339,9 +376,7 @@ public class SkyBlockCommand extends CommandBase {
                     .setColor(EnumChatFormatting.RED));
             return;
         }
-        island.pendingDelete = true;
-        island.pendingDeleteTime = System.currentTimeMillis();
-        SkyBlockDataManager.setIsland(player, island);
+        pendingDeleteRequests.put(player.username, System.currentTimeMillis());
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.pending|name=" + player.username)
                 .setColor(EnumChatFormatting.YELLOW));
     }
@@ -350,12 +385,12 @@ public class SkyBlockCommand extends CommandBase {
      * Confirms deletion of the player's island.
      */
     private void handleDeleteConfirm(EntityPlayerMP player) {
-        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
-        if (island == null || !island.pendingDelete) {
+        if (!pendingDeleteRequests.containsKey(player.username)) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.nopending|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
             return;
         }
+        pendingDeleteRequests.remove(player.username);
         SkyBlockDataManager.setIsland(player, null);
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.success|name=" + player.username)
                 .setColor(EnumChatFormatting.GREEN));
@@ -697,17 +732,16 @@ public class SkyBlockCommand extends CommandBase {
         }
 
         // Handle island delete timeouts
-        for (Object obj : world.playerEntities) {
-            EntityPlayerMP player = (EntityPlayerMP) obj;
-            SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
-            if (island != null && island.pendingDelete) {
-                long now = System.currentTimeMillis();
-                if (now - island.pendingDeleteTime > 60_000) {
-                    island.pendingDelete = false;
-                    SkyBlockDataManager.setIsland(player, island);
+        Iterator<Map.Entry<String, Long>> itDelete = pendingDeleteRequests.entrySet().iterator();
+        while (itDelete.hasNext()) {
+            Map.Entry<String, Long> entry = itDelete.next();
+            if (System.currentTimeMillis() - entry.getValue() > 60_000) {
+                EntityPlayerMP player = getOnlinePlayer(entry.getKey());
+                if (player != null) {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.timeout|name=" + player.username)
                             .setColor(EnumChatFormatting.RED));
                 }
+                itDelete.remove();
             }
         }
 

@@ -84,8 +84,6 @@ public class SkyBlockDataManager {
         islandTag.setDouble("initSpawnY", ip.initSpawnY);
         islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
-        islandTag.setBoolean("pendingDelete", ip.pendingDelete);
-        islandTag.setLong("pendingDeleteTime", ip.pendingDeleteTime);
         NBTTagList memberList = new NBTTagList();
         for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
         islandTag.setTag("members", memberList);
@@ -120,8 +118,6 @@ public class SkyBlockDataManager {
         ip.initSpawnY = islandTag.hasKey("initSpawnY") ? islandTag.getDouble("initSpawnY") : islandTag.getDouble("spawnY");
         ip.initSpawnZ = islandTag.hasKey("initSpawnZ") ? islandTag.getDouble("initSpawnZ") : islandTag.getDouble("spawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
-        ip.pendingDelete = islandTag.getBoolean("pendingDelete");
-        ip.pendingDeleteTime = islandTag.getLong("pendingDeleteTime");
         ip.protectEnabled = islandTag.hasKey("protectEnabled") && islandTag.getBoolean("protectEnabled");
         if (islandTag.hasKey("members")) {
             NBTTagList memberList = islandTag.getTagList("members");

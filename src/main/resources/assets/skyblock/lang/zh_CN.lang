@@ -80,3 +80,7 @@ commands.island.taunt.7=[SkyBlock] 提示：{name}的岛屿又要重建了！
 commands.island.taunt.8=[SkyBlock] 你们有没有发现，{name}特别喜欢重置挑战...
 commands.island.taunt.9=[SkyBlock] {name}，你是不是忘记怎么经营岛屿了？
 commands.island.taunt.10=[SkyBlock] 一键重开空岛，{name}专属技能，羡慕不？
+
+commands.island.new.not_enough_money=新建空岛需要花费{cost}元，余额不足！
+commands.island.new.cost_paid=已花费{amount}元，正在创建空岛。
+commands.island.new.shopmod_error=检查余额时发生错误，请联系管理员或稍后重试。

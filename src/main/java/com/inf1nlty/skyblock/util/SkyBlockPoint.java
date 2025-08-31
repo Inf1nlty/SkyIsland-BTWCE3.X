@@ -15,9 +15,7 @@ public class SkyBlockPoint {
     public Set<String> members = new HashSet<>();
     public double spawnX, spawnY, spawnZ;
     public boolean tpaEnabled = true;
-    public boolean pendingDelete = false;
     public boolean protectEnabled;
-    public long pendingDeleteTime = 0;
 
     public SkyBlockPoint(String owner, int x, int y, int z, int dim) {
         this.owner = owner;

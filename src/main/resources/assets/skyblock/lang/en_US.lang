@@ -80,3 +80,7 @@ commands.island.taunt.7=Notice: {name} is rebuilding their island—again!
 commands.island.taunt.8=Has anyone noticed that {name} loves resetting challenges?
 commands.island.taunt.9={name}, did you forget how to manage your island?
 commands.island.taunt.10=Instant island reset, {name}'s exclusive skill. Impressive!
+
+commands.island.new.not_enough_money=You need cost {cost}$ to create a new island. Insufficient balance!
+commands.island.new.cost_paid={amount}$ have been deducted for creating a new island.
+commands.island.new.shopmod_error=An error occurred when checking your balance. Please contact the admin or try again later.
