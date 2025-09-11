@@ -14,8 +14,7 @@
     "WorldServerMixin"
   ],
   "client": [
-    "GuiCreateWorldMixin",
-    "client.GuiNewChatMixin"
+    "GuiCreateWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
