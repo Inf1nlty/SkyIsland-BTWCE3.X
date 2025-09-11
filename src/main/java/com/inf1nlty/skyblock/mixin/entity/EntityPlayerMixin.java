@@ -23,6 +23,7 @@ public class EntityPlayerMixin {
     @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
     public void writeIslandNBT(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayer player = (EntityPlayer) (Object) this;
+        if (player instanceof EntityPlayerMP) return;
         // Use DataManager for multiplayer, fallback for singleplayer
         SkyBlockPoint ip;
         if (player instanceof EntityPlayerMP) {
@@ -39,6 +40,7 @@ public class EntityPlayerMixin {
     @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
     public void readIslandNBT(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayer player = (EntityPlayer) (Object) this;
+        if (player instanceof EntityPlayerMP) return;
         SkyBlockPoint ip = SkyBlockManager.readIslandFromNBT(player, tag);
         // Store to DataManager for multiplayer, fallback for singleplayer
         if (player instanceof EntityPlayerMP) {

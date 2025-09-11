@@ -649,7 +649,7 @@ public class SkyBlockCommand extends CommandBase {
         SkyBlockPoint island = SkyBlockDataManager.getIsland(owner);
         if (island != null) {
             island.members.add(memberName);
-            SkyBlockDataManager.setIsland(owner, island);
+            syncAllMembers(island);
             EntityPlayerMP member = getOnlinePlayer(memberName);
             if (member != null) {
                 member.sendChatToPlayer(createFormattedMessage("commands.island.join.accepted",
@@ -695,11 +695,12 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         island.members.remove(memberName);
-        SkyBlockDataManager.setIsland(player, island);
+        syncAllMembers(island);
         player.sendChatToPlayer(createFormattedMessage("commands.island.remove.success",
                 EnumChatFormatting.GREEN, false, false, false, memberName));
         EntityPlayerMP removed = getOnlinePlayer(memberName);
         if (removed != null) {
+            SkyBlockDataManager.setIsland(removed, null);
             removed.sendChatToPlayer(createFormattedMessage("commands.island.remove.kicked",
                     EnumChatFormatting.RED, false, false, false, player.username));
         }
@@ -731,7 +732,8 @@ public class SkyBlockCommand extends CommandBase {
         SkyBlockPoint island = SkyBlockDataManager.getIslandForMember(player);
         if (island != null && !island.owner.equals(player.username)) {
             island.members.remove(player.username);
-            SkyBlockDataManager.setIsland(getOnlinePlayer(island.owner), island);
+            syncAllMembers(island);
+            SkyBlockDataManager.setIsland(player, null);
             pendingLeaveRequests.remove(player.username);
             player.sendChatToPlayer(createFormattedMessage("commands.island.leave.success",
                     EnumChatFormatting.GREEN, false, false, false, player.username));
@@ -908,6 +910,15 @@ public class SkyBlockCommand extends CommandBase {
             if (player.username.equalsIgnoreCase(name)) return player;
         }
         return null;
+    }
+
+    private void syncAllMembers(SkyBlockPoint island) {
+        EntityPlayerMP owner = getOnlinePlayer(island.owner);
+        if (owner != null) SkyBlockDataManager.setIsland(owner, island);
+        for (String member : island.members) {
+            EntityPlayerMP p = getOnlinePlayer(member);
+            if (p != null) SkyBlockDataManager.setIsland(p, island);
+        }
     }
 
     public static ChatMessageComponent createMessage(String key, EnumChatFormatting color, boolean bold, boolean italic, boolean underline) {
