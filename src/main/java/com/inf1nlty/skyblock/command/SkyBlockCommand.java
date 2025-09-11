@@ -42,6 +42,7 @@ public class SkyBlockCommand extends CommandBase {
     private static final Map<String, Integer> pendingIslandTeleports = new HashMap<>();
     private static final Map<String, Integer> pendingCreate = new HashMap<>();
     private static final Map<String, Long> pendingDeleteRequests = new HashMap<>();
+    private static final Map<String, Long> pendingLeaveRequests = new HashMap<>();
     private static final Map<String, String> pendingTPARequests = new HashMap<>();
     private static final Map<String, PendingTeleport> pendingTeleports = new HashMap<>();
     private static final Map<String, PendingTPARequest> pendingTPATIMEOUTRequests = new HashMap<>();
@@ -288,6 +289,14 @@ public class SkyBlockCommand extends CommandBase {
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.remove.usage").setColor(EnumChatFormatting.YELLOW));
                 }
                 break;
+            case "leave":
+            case "l":
+                if (args.length > 1 && (args[1].equalsIgnoreCase("confirm") || args[1].equalsIgnoreCase("c"))) {
+                    handleLeaveConfirm(player);
+                } else {
+                    handleLeave(player);
+                }
+                break;
             default:
                 handleInfo(player);
                 break;
@@ -374,6 +383,11 @@ public class SkyBlockCommand extends CommandBase {
         if (island == null) {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.notfound|name=" + player.username)
                     .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (pendingDeleteRequests.containsKey(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.delete.already_pending|name=" + player.username)
+                    .setColor(EnumChatFormatting.YELLOW));
             return;
         }
         pendingDeleteRequests.put(player.username, System.currentTimeMillis());
@@ -520,6 +534,10 @@ public class SkyBlockCommand extends CommandBase {
             player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.dim_mismatch|name=" + target.username).setColor(EnumChatFormatting.RED));
             return;
         }
+        if (pendingTPARequests.containsKey(target.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.already_pending|name=" + target.username).setColor(EnumChatFormatting.YELLOW));
+            return;
+        }
         pendingTPARequests.put(target.username, player.username);
         pendingTPATIMEOUTRequests.put(target.username, new PendingTPARequest(player.username, System.currentTimeMillis()));
         player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.request_sent|name=" + target.username).setColor(EnumChatFormatting.AQUA));
@@ -660,6 +678,43 @@ public class SkyBlockCommand extends CommandBase {
         }
     }
 
+    private void handleLeave(EntityPlayerMP player) {
+        SkyBlockPoint island = SkyBlockDataManager.getIslandForMember(player);
+        if (island == null || island.owner.equals(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.not_member|name=" + player.username)
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        if (pendingLeaveRequests.containsKey(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.already_pending|name=" + player.username)
+                    .setColor(EnumChatFormatting.YELLOW));
+            return;
+        }
+        pendingLeaveRequests.put(player.username, System.currentTimeMillis());
+        player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.pending|name=" + player.username)
+                .setColor(EnumChatFormatting.YELLOW));
+    }
+
+    private void handleLeaveConfirm(EntityPlayerMP player) {
+        if (!pendingLeaveRequests.containsKey(player.username)) {
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.nopending|name=" + player.username)
+                    .setColor(EnumChatFormatting.RED));
+            return;
+        }
+        SkyBlockPoint island = SkyBlockDataManager.getIslandForMember(player);
+        if (island != null && !island.owner.equals(player.username)) {
+            island.members.remove(player.username);
+            SkyBlockDataManager.setIsland(getOnlinePlayer(island.owner), island);
+            pendingLeaveRequests.remove(player.username);
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.success|name=" + player.username)
+                    .setColor(EnumChatFormatting.GREEN));
+        } else {
+            pendingLeaveRequests.remove(player.username);
+            player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.not_member|name=" + player.username)
+                    .setColor(EnumChatFormatting.RED));
+        }
+    }
+
     /**
      * Server tick handler for delayed island creation, deletion timeout, and pending teleports.
      * Should be called each tick from mod/server code.
@@ -689,7 +744,7 @@ public class SkyBlockCommand extends CommandBase {
                                 "commands.island.taunt.10"
                         };
                         String tauntKey = tauntKeys[(int) (Math.random() * tauntKeys.length)];
-                        String tauntMsg = StatCollector.translateToLocal(tauntKey).replace("{name}", player.username);
+                        String tauntMsg = tauntKey + "|name=" + player.username;
                         for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
                             EntityPlayerMP target = (EntityPlayerMP) obj;
                             target.sendChatToPlayer(ChatMessageComponent.createFromText(tauntMsg).setColor(EnumChatFormatting.LIGHT_PURPLE));
@@ -745,6 +800,20 @@ public class SkyBlockCommand extends CommandBase {
             }
         }
 
+        // Handle leave requests timeouts
+        Iterator<Map.Entry<String, Long>> itLeave = pendingLeaveRequests.entrySet().iterator();
+        while (itLeave.hasNext()) {
+            Map.Entry<String, Long> entry = itLeave.next();
+            if (System.currentTimeMillis() - entry.getValue() > 60_000) {
+                EntityPlayerMP player = getOnlinePlayer(entry.getKey());
+                if (player != null) {
+                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.leave.timeout|name=" + player.username)
+                            .setColor(EnumChatFormatting.RED));
+                }
+                itLeave.remove();
+            }
+        }
+
         // Handle pending teleports
         Iterator<Map.Entry<String, PendingTeleport>> itTP = pendingTeleports.entrySet().iterator();
         while (itTP.hasNext()) {
@@ -772,6 +841,7 @@ public class SkyBlockCommand extends CommandBase {
                 if (target != null) {
                     target.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.tpa.timeout_notice|name=" + entry.getValue().requester).setColor(EnumChatFormatting.RED));
                 }
+                pendingTPARequests.remove(entry.getKey());
                 itTPA.remove();
             }
         }

@@ -1,12 +1,13 @@
 package com.inf1nlty.skyblock;
 
 import net.minecraft.src.*;
-import java.util.List;
+
+import java.util.Arrays;
 
 /**
- * 兼容原版/BWG/BTW的虚空世界生成器
- * - generatorOptions == "skyblock" 时生成虚空岛
- * - 其它类型全部委托给原版生成器，保证主世界/下界/末地/BTW维度等正常生成
+ * Compatible with the vanilla/BWG/BTW void world generators
+ * - Generates void islands when generatorOptions == "skyblock"
+ * - Delegates all other types to the vanilla generator, ensuring normal generation of the Overworld/Nether/The End/BTW dimensions, etc.
  */
 public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
@@ -14,15 +15,15 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
         super(world, seed, mapFeaturesEnabled);
     }
 
-    // ==== 常量化房间坐标 ====
-    private static final int HALF_OUTER = 6;      // 外壳半径
-    private static final int HALF_INNER = 5;      // 内部空间半径
-    private static final int DESIRED_FLOOR_Y = 99;// 地板Y
-    private static final int CENTER_Y = DESIRED_FLOOR_Y + HALF_INNER; // 房间中心Y
+    // ==== Constantized room coordinates ====
+    private static final int HALF_OUTER = 6; // Outer shell radius
+    private static final int HALF_INNER = 5; // Inner space radius
+    private static final int DESIRED_FLOOR_Y = 99; // Floor Y
+    private static final int CENTER_Y = DESIRED_FLOOR_Y + HALF_INNER; // Room center Y
     private static final int TORCH_BLOCK_ID = 1057;
     private static final int SIGN_WALL_ID = Block.signWall.blockID;
 
-    // 房间地板四角火把
+    // Torches at the four corners of the room floor
     private static final int[][] ROOM_TORCH_POSITIONS = {
             {4, DESIRED_FLOOR_Y, 4},
             {-5, DESIRED_FLOOR_Y, 4},
@@ -30,7 +31,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
             {-5, DESIRED_FLOOR_Y, -5}
     };
 
-    // 房间外顶四角火把
+    // Four torches outside the room
     private static final int TOP_Y = CENTER_Y + HALF_OUTER;
     private static final int[][] ROOF_TORCH_POSITIONS = {
             {HALF_OUTER - 1, TOP_Y, HALF_OUTER - 1},
@@ -39,13 +40,13 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
             {-HALF_OUTER, TOP_Y, -HALF_OUTER}
     };
 
-    // 南墙告示牌（z=4，背后z=5，朝南meta=2）
+    // South wall sign (z=4, behind z=5, south meta=2)
     private static final int SIGN_Y = DESIRED_FLOOR_Y + 1;
     private static final int SIGN_SOUTH_WALL_Z = 4;
     private static final int SIGN_SOUTH_BEDROCK_Z = 5;
     private static final int SIGN_SOUTH_META = 2;
 
-    // 北墙告示牌（z=-5，背后z=-6，朝北meta=3）
+    // North wall sign (z=-5, back z=-6, north meta=3)
     private static final int SIGN_NORTH_WALL_Z = -5;
     private static final int SIGN_NORTH_BEDROCK_Z = -6;
     private static final int SIGN_NORTH_META = 3;
@@ -80,33 +81,34 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
     };
 
     @Override
-    public void generateTerrain(int chunkX, int chunkZ, byte[] blockArray) {
+    public void generateTerrain(int chunkX, int chunkZ, short[] blockIDs, byte[] metadata) {
         if (this.worldObj.provider.dimensionId == 0) {
-            for (int x = 0; x < 16; x++)
-                for (int z = 0; z < 16; z++)
-                    for (int y = 0; y < 128; y++)
-                        blockArray[(x * 16 + z) * 128 + y] = 0;
+            Arrays.fill(blockIDs, (short) 0);
+            if (metadata != null) {
+                Arrays.fill(metadata, (byte) 0);
+            }
         } else {
-            super.generateTerrain(chunkX, chunkZ, blockArray);
+            super.generateTerrain(chunkX, chunkZ, blockIDs, metadata);
         }
     }
 
     @Override
-    public void replaceBlocksForBiome(int chunkX, int chunkZ, byte[] blockArray, BiomeGenBase[] biomes) {
-        if (this.worldObj.provider.dimensionId == 0) {
-        } else {
-            super.replaceBlocksForBiome(chunkX, chunkZ, blockArray, biomes);
-        }
+    public void replaceBlocksForBiome(int chunkX, int chunkZ, short[] blockIDs, byte[] metadata, BiomeGenBase[] biomes) {
+        if (this.worldObj.provider.dimensionId == 0) return;
+        super.replaceBlocksForBiome(chunkX, chunkZ, blockIDs, metadata, biomes);
     }
 
     @Override
     public Chunk provideChunk(int chunkX, int chunkZ) {
         if (this.worldObj.provider.dimensionId == 0) {
-            byte[] blocks = new byte[32768];
-            generateTerrain(chunkX, chunkZ, blocks);
+            short[] blockIDs = new short[16 * 16 * 128];
+            byte[] metadata = new byte[16 * 16 * 128];
+            generateTerrain(chunkX, chunkZ, blockIDs, metadata);
 
-            this.biomesForGeneration = this.worldObj.getWorldChunkManager().loadBlockGeneratorData(this.biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
-            replaceBlocksForBiome(chunkX, chunkZ, blocks, this.biomesForGeneration);
+            this.biomesForGeneration = this.worldObj.getWorldChunkManager().loadBlockGeneratorData(
+                    this.biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
+
+            replaceBlocksForBiome(chunkX, chunkZ, blockIDs, metadata, this.biomesForGeneration);
 
             Chunk chunk = new Chunk(this.worldObj, chunkX, chunkZ);
             byte[] biomeArr = chunk.getBiomeArray();
@@ -115,7 +117,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
             }
             chunk.generateSkylightMap();
 
-            // 生成基岩房间
+            // Generate bedrock room
             for (int bx = -HALF_OUTER; bx <= HALF_OUTER - 1; bx++) {
                 for (int by = -HALF_OUTER; by <= HALF_OUTER - 1; by++) {
                     for (int bz = -HALF_OUTER; bz <= HALF_OUTER - 1; bz++) {
@@ -143,7 +145,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                 }
             }
 
-            // 房间地板四角火把
+            // Torches at the four corners of the room floor
             for (int[] pos : ROOM_TORCH_POSITIONS) {
                 int tx = pos[0], ty = pos[1], tz = pos[2];
                 if ((tx >> 4) == chunkX && (tz >> 4) == chunkZ) {
@@ -159,7 +161,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                 }
             }
 
-            // 房间外顶四角火把
+            // Four torches outside the room
             for (int[] pos : ROOF_TORCH_POSITIONS) {
                 int tx = pos[0], ty = pos[1], tz = pos[2];
                 if ((tx >> 4) == chunkX && (tz >> 4) == chunkZ) {
@@ -175,7 +177,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                 }
             }
 
-            // 南墙一排告示牌
+            // A row of notice boards on the south wall
             for (int signX = -5; signX <= 4; signX++) {
                 int idx = signX + 5; // x:-5~4 => idx:0~9
                 if ((signX >> 4) == chunkX && (SIGN_SOUTH_WALL_Z >> 4) == chunkZ) {
@@ -209,7 +211,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
                 }
             }
 
-            // 北墙一排告示牌
+            // A row of signs on the north wall
             for (int signX = -5; signX <= 4; signX++) {
                 int idx = signX + 5; // x:-5~4 => idx:0~9
                 if ((signX >> 4) == chunkX && (SIGN_NORTH_WALL_Z >> 4) == chunkZ) {
@@ -250,16 +252,8 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
     @Override
     public void populate(IChunkProvider provider, int chunkX, int chunkZ) {
-        if (this.worldObj.provider.dimensionId == 0) {
-            // 主世界允许末地传送门结构
-            if (this.strongholdGenerator != null) {
-                this.strongholdGenerator.generateStructuresInChunk(this.worldObj, this.rand, chunkX, chunkZ);
-            }
-            // 其它主世界结构（如村庄、矿井等）你也可以加在这里
-        } else {
-            // 下界、末地以及其它维度全部用原版populate
-            super.populate(provider, chunkX, chunkZ);
-        }
+        if (this.worldObj.provider.dimensionId == 0) return;
+        super.populate(provider, chunkX, chunkZ);
     }
 
     public void btwPostProcessChunk(World worldObj, int iChunkX, int iChunkZ) {}
