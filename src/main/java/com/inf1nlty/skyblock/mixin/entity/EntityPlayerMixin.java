@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.entity;
 
 import com.inf1nlty.skyblock.util.SkyBlockManager;
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;

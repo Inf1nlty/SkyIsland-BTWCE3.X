@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.util.SkyBlockManager;
 import net.minecraft.src.NBTTagCompound;

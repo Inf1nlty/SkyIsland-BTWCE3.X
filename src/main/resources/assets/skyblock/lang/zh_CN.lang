@@ -1,3 +1,4 @@
+commands.island.reload.success=空岛配置已重新加载
 commands.island.notfound=你还没有空岛。
 commands.island.tp_wait=将在3秒后传送到你的空岛...
 commands.island.tp_pending=传送请求已在等待中。
@@ -74,6 +75,7 @@ commands.island.leave.nopending=没有待确认的离岛请求。
 commands.island.leave.success=你已成功离开岛屿。
 commands.island.leave.timeout=离岛请求已超时，请重新操作。
 commands.island.leave.not_member=你还不是岛屿成员，不能离开。
+
 
 island.createworld.voidworld=虚空世界： §c关
 island.createworld.selected=虚空世界： §a开

@@ -304,6 +304,9 @@ public class SkyBlockCommand extends CommandBase {
                     handleLeave(player);
                 }
                 break;
+            case "reload":
+                handleReload(player);
+                break;
             default:
                 handleInfo(player);
                 break;
@@ -333,6 +336,12 @@ public class SkyBlockCommand extends CommandBase {
             player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
                     EnumChatFormatting.RED, false, false, false, player.username));
         }
+    }
+
+    private void handleReload(EntityPlayerMP player) {
+        com.inf1nlty.skyblock.SkyblockConfig.reload();
+        player.sendChatToPlayer(createMessage("commands.island.reload.success",
+                EnumChatFormatting.GREEN, false, false, false));
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.client;
 
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiCreateWorld;

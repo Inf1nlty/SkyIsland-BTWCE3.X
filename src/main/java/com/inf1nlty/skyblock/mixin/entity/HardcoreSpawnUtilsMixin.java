@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.entity;
 
 import btw.util.hardcorespawn.HardcoreSpawnUtils;
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
