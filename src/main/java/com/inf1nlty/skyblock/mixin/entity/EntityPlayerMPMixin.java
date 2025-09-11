@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.entity;
 
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.ItemInWorldManager;
@@ -39,8 +40,16 @@ public class EntityPlayerMPMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void forceVoidWorldPlayerSpawn(MinecraftServer par1MinecraftServer, World par2World, String par3Str, ItemInWorldManager par4ItemInWorldManager, CallbackInfo ci) {
-        if ("voidworld".equals(par2World.getWorldInfo().getGeneratorOptions())) {
+        if (SkyBlockWorldUtil.isVoidWorld(par2World)) {
             ((EntityPlayerMP)(Object)this).setLocationAndAngles(0.5, 101.0, 0.5, 0.0F, 0.0F);
         }
     }
+
+    @Inject(method = "dropMysteryMeat", at = @At("HEAD"), cancellable = true)
+    private void cancelMysteryMeatInVoidWorld(int iLootingModifier, CallbackInfo ci) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            ci.cancel();
+        }
+    }
+
 }

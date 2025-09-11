@@ -1,5 +1,6 @@
 package com.inf1nlty.skyblock;
 
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
 
 import java.util.Arrays;
@@ -82,7 +83,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
     @Override
     public void generateTerrain(int chunkX, int chunkZ, short[] blockIDs, byte[] metadata) {
-        if (this.worldObj.provider.dimensionId == 0) {
+        if (SkyBlockWorldUtil.isVoidOverworld(this.worldObj)) {
             Arrays.fill(blockIDs, (short) 0);
             if (metadata != null) {
                 Arrays.fill(metadata, (byte) 0);
@@ -94,13 +95,13 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
     @Override
     public void replaceBlocksForBiome(int chunkX, int chunkZ, short[] blockIDs, byte[] metadata, BiomeGenBase[] biomes) {
-        if (this.worldObj.provider.dimensionId == 0) return;
+        if (SkyBlockWorldUtil.isVoidOverworld(this.worldObj)) return;
         super.replaceBlocksForBiome(chunkX, chunkZ, blockIDs, metadata, biomes);
     }
 
     @Override
     public Chunk provideChunk(int chunkX, int chunkZ) {
-        if (this.worldObj.provider.dimensionId == 0) {
+        if (SkyBlockWorldUtil.isVoidOverworld(this.worldObj)) {
             short[] blockIDs = new short[16 * 16 * 128];
             byte[] metadata = new byte[16 * 16 * 128];
             generateTerrain(chunkX, chunkZ, blockIDs, metadata);
@@ -252,7 +253,7 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
 
     @Override
     public void populate(IChunkProvider provider, int chunkX, int chunkZ) {
-        if (this.worldObj.provider.dimensionId == 0) return;
+        if (SkyBlockWorldUtil.isVoidOverworld(this.worldObj)) return;
         super.populate(provider, chunkX, chunkZ);
     }
 

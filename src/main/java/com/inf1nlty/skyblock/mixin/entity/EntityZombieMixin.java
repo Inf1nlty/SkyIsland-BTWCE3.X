@@ -5,6 +5,7 @@ import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityZombie.class)
@@ -17,9 +18,23 @@ public class EntityZombieMixin {
                 && self.worldObj != null
                 && self.worldObj.provider.dimensionId == -1) {
             self.setVillager(true);
-            // Randomly assign occupations (0~4), the original number of occupations is 5
-            self.villagerClass = self.rand.nextInt(5);
-            self.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 999999 * 20, 0, true));
+
+            // 6:1:1:1:1
+            int n = self.rand.nextInt(10);
+            if (n < 6) {
+                self.villagerClass = 0;
+            } else {
+                self.villagerClass = n - 5;
+            }
+
+            self.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 9999 * 20, 0, true));
         }
     }
+
+    @Inject(method = "startConversion", at = @At("HEAD"))
+    private void makePersistentWhenConverting(int time, CallbackInfo ci) {
+        EntityZombie self = (EntityZombie)(Object)this;
+        self.setPersistent(true);
+    }
+
 }

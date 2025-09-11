@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.VoidWorldChunkProvider;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldProvider;
 import net.minecraft.src.IChunkProvider;
@@ -16,7 +17,7 @@ public class WorldProviderMixin {
     private void onCreateChunkGenerator(CallbackInfoReturnable<IChunkProvider> cir) {
         WorldProvider self = (WorldProvider) (Object) this;
         World world = self.worldObj;
-        if ("voidworld".equals(world.getWorldInfo().getGeneratorOptions())) {
+        if (SkyBlockWorldUtil.isVoidWorld(world)) {
             cir.setReturnValue(new VoidWorldChunkProvider(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled()));
         }
     }

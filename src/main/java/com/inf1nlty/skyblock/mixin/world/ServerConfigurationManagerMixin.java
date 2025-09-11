@@ -3,6 +3,7 @@ package com.inf1nlty.skyblock.mixin.world;
 import com.inf1nlty.skyblock.SkyblockConfig;
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import com.inf1nlty.skyblock.util.SkyBlockPoint;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -18,7 +19,7 @@ public abstract class ServerConfigurationManagerMixin {
     private void forceVoidWorldRespawn(EntityPlayerMP oldPlayer, int iDefaultDimension, boolean playerLeavingTheEnd, CallbackInfoReturnable<EntityPlayerMP> cir) {
         EntityPlayerMP newPlayer = cir.getReturnValue();
         WorldServer world = newPlayer.mcServer.worldServerForDimension(newPlayer.dimension);
-        if ("voidworld".equals(world.getWorldInfo().getGeneratorOptions()) && newPlayer.dimension == 0) {
+        if (SkyBlockWorldUtil.isVoidWorld(world) && newPlayer.dimension == 0) {
             SkyBlockPoint island = SkyBlockDataManager.getIsland(newPlayer);
             if (island == null) {
                 island = SkyBlockDataManager.getIslandForMember(newPlayer);
@@ -28,6 +29,8 @@ public abstract class ServerConfigurationManagerMixin {
             } else {
                 newPlayer.setLocationAndAngles(0.5, 101.0, 0.5, 0.0F, 0.0F);
             }
+            newPlayer.setHealth(10.0F);
+            newPlayer.foodStats.setFoodLevel(30);
             newPlayer.playerNetServerHandler.setPlayerLocation(newPlayer.posX, newPlayer.posY, newPlayer.posZ, newPlayer.rotationYaw, newPlayer.rotationPitch);
         }
     }

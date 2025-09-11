@@ -20,7 +20,7 @@ public class NetherBridgeMapGenMixin {
         if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
             List<SpawnListEntry> spawnList = ((NetherBridgeMapGen) (Object) this).getSpawnList();
             if (spawnList != null) {
-                spawnList.add(new SpawnListEntry(EntityZombie.class, 100, 1, 1));
+                spawnList.add(new SpawnListEntry(EntityZombie.class, 3, 1, 1));
             }
         }
     }

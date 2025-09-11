@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.SkyblockConfig;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.WorldServer;
 import net.minecraft.src.WorldSettings;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,9 +15,8 @@ public class WorldServerMixin {
 
     @Inject(method = "initialize", at = @At("TAIL"))
     private void forceVoidWorldOriginalSpawn(WorldSettings settings, CallbackInfo ci) {
-        WorldServer ws = (WorldServer)(Object)this;
-        if ("voidworld".equals(ws.getWorldInfo().getGeneratorOptions())) {
-            ws.getWorldInfo().setSpawnPosition(0, 101, 0);
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            ((WorldServer)(Object)this).getWorldInfo().setSpawnPosition(0, 101, 0);
         }
     }
 

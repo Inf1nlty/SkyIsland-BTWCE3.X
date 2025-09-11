@@ -202,9 +202,9 @@ public class SkyBlockManager {
         ip.spawnX = islandTag.getDouble("spawnX");
         ip.spawnY = islandTag.getDouble("spawnY");
         ip.spawnZ = islandTag.getDouble("spawnZ");
-        ip.initSpawnX = islandTag.hasKey("initSpawnX") ? islandTag.getDouble("initSpawnX") : islandTag.getDouble("spawnX");
-        ip.initSpawnY = islandTag.hasKey("initSpawnY") ? islandTag.getDouble("initSpawnY") : islandTag.getDouble("spawnY");
-        ip.initSpawnZ = islandTag.hasKey("initSpawnZ") ? islandTag.getDouble("initSpawnZ") : islandTag.getDouble("spawnZ");
+        ip.initSpawnX = islandTag.getDouble("initSpawnX");
+        ip.initSpawnY = islandTag.getDouble("initSpawnY");
+        ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.protectEnabled = islandTag.hasKey("protectEnabled") && islandTag.getBoolean("protectEnabled");
         if (islandTag.hasKey("members")) {

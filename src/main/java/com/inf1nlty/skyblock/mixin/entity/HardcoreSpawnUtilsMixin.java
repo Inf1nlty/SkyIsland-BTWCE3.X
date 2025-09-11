@@ -3,6 +3,7 @@ package com.inf1nlty.skyblock.mixin.entity;
 import btw.util.hardcorespawn.HardcoreSpawnUtils;
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import com.inf1nlty.skyblock.util.SkyBlockPoint;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.WorldServer;
@@ -18,7 +19,7 @@ public class HardcoreSpawnUtilsMixin {
     @Inject(method = "handleHardcoreSpawn", at = @At("HEAD"), cancellable = true)
     private static void forceVoidWorldRespawn(MinecraftServer server, EntityPlayerMP oldPlayer, EntityPlayerMP newPlayer, CallbackInfo ci) {
         WorldServer mainWorld = server.worldServerForDimension(0);
-        if (!"voidworld".equals(mainWorld.getWorldInfo().getGeneratorOptions())) {
+        if (!SkyBlockWorldUtil.isVoidWorld(mainWorld)) {
             return;
         }
         SkyBlockPoint island = SkyBlockDataManager.getIsland(newPlayer);
