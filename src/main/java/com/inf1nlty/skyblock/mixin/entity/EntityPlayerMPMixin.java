@@ -36,17 +36,14 @@ public class EntityPlayerMPMixin {
     public void readIslandData(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayerMP player = (EntityPlayerMP)(Object)this;
         String owner = SkyBlockDataManager.getGlobalMemberOwner(player.username);
-        SkyBlockPoint ip = null;
-        if (owner != null) {
-            ip = SkyBlockDataManager.getIsland(owner);
-            if (ip != null && !ip.members.contains(player.username) && !owner.equals(player.username)) {
+        if (owner != null && !owner.equals(player.username)) {
+            SkyBlockPoint ip = SkyBlockDataManager.getIsland(owner);
+            if (ip != null) {
                 ip.members.add(player.username);
             }
-        }
-        if (ip == null) {
-            SkyBlockDataManager.readIslandFromNBT(player, tag);
-        } else {
             SkyBlockDataManager.setIsland(player, ip);
+        } else {
+            SkyBlockDataManager.readIslandFromNBT(player, tag);
         }
     }
 

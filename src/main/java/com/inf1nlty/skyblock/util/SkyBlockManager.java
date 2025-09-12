@@ -73,6 +73,10 @@ public class SkyBlockManager {
         return spIslands.get(player.username);
     }
 
+    public static Iterable<SkyBlockPoint> getAllIslands() {
+        return spIslands.values();
+    }
+
     public static void setIsland(EntityPlayer player, SkyBlockPoint ip) {
         if (ip == null) {
             spIslands.remove(player.username);

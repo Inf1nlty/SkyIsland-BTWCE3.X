@@ -26,7 +26,9 @@ public class EntityPlayerMixin {
         EntityPlayer player = (EntityPlayer) (Object) this;
         if (!(player instanceof EntityPlayerMP)) {
             SkyBlockPoint ip = SkyBlockManager.getIsland(player);
-            SkyBlockManager.writeIslandToNBT(tag, ip);
+            if (ip != null && player.username.equals(ip.owner)) {
+                SkyBlockManager.writeIslandToNBT(tag, ip);
+            }
         }
     }
 

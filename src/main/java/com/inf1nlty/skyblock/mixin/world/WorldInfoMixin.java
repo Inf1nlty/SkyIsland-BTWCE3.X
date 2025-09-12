@@ -2,6 +2,7 @@ package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import com.inf1nlty.skyblock.util.SkyBlockManager;
+import com.inf1nlty.skyblock.util.SkyBlockPoint;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.WorldInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +24,16 @@ public abstract class WorldInfoMixin {
         SkyBlockManager.readGlobalIslandData(tag);
         SkyBlockManager.readGlobalMembersFromNBT(tag);
         SkyBlockDataManager.readGlobalMembersFromNBT(tag);
+        for (SkyBlockPoint ip : SkyBlockManager.getAllIslands()) {
+            for (String member : ip.members) {
+                SkyBlockManager.setGlobalMember(member, ip.owner);
+            }
+        }
+        for (SkyBlockPoint ip : SkyBlockDataManager.getAllIslands()) {
+            for (String member : ip.members) {
+                SkyBlockDataManager.setGlobalMember(member, ip.owner);
+            }
+        }
     }
 
     /**

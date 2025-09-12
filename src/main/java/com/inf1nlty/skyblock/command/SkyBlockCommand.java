@@ -404,15 +404,14 @@ public class SkyBlockCommand extends CommandBase {
 
         SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island != null) {
-            for (String member : island.members) {
+            for (String member : new HashSet<>(island.members)) {
                 SkyBlockDataManager.setGlobalMember(member, null);
                 SkyBlockDataManager.setIsland(member, null);
             }
             SkyBlockDataManager.setGlobalMember(player.username, null);
+            SkyBlockDataManager.setIsland(player, null);
             island.members.clear();
-            syncAllMembers(island);
         }
-        SkyBlockDataManager.setIsland(player, null);
         player.sendChatToPlayer(createFormattedMessage("commands.island.delete.success",
                 EnumChatFormatting.GREEN, false, false, false, player.username));
     }
@@ -707,8 +706,9 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         island.members.remove(memberName);
-        syncAllMembers(island);
+        SkyBlockDataManager.setIsland(memberName, null);
         SkyBlockDataManager.setGlobalMember(memberName, null);
+        syncAllMembers(island);
         player.sendChatToPlayer(createFormattedMessage("commands.island.remove.success",
                 EnumChatFormatting.GREEN, false, false, false, memberName));
         EntityPlayerMP removed = getOnlinePlayer(memberName);
@@ -745,9 +745,9 @@ public class SkyBlockCommand extends CommandBase {
         SkyBlockPoint island = SkyBlockDataManager.getIslandForMember(player);
         if (island != null && !island.owner.equals(player.username)) {
             island.members.remove(player.username);
-            syncAllMembers(island);
             SkyBlockDataManager.setIsland(player, null);
             SkyBlockDataManager.setGlobalMember(player.username, null);
+            syncAllMembers(island);
             pendingLeaveRequests.remove(player.username);
             player.sendChatToPlayer(createFormattedMessage("commands.island.leave.success",
                     EnumChatFormatting.GREEN, false, false, false, player.username));
