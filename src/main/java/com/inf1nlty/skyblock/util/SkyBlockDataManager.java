@@ -31,6 +31,15 @@ public class SkyBlockDataManager {
         }
     }
 
+    public static void setIsland(String username, SkyBlockPoint ip) {
+        if (ip == null) {
+            playerIslands.remove(username);
+        } else {
+            playerIslands.put(username, ip);
+            everCreatedIslanders.add(username);
+        }
+    }
+
     public static SkyBlockPoint getIslandForMember(EntityPlayerMP player) {
         for (SkyBlockPoint ip : playerIslands.values()) {
             if (ip.members.contains(player.username)) {

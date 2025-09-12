@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.entity;
 
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockPoint;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.EntityPlayerMP;
@@ -35,7 +36,12 @@ public class EntityPlayerMPMixin {
     public void readIslandData(NBTTagCompound tag, CallbackInfo ci) {
         EntityPlayerMP player = (EntityPlayerMP)(Object)this;
         SkyBlockDataManager.readIslandFromNBT(player, tag);
-        SkyBlockDataManager.readHistoryFromNBT(player, tag);
+        SkyBlockPoint ip = SkyBlockDataManager.getIsland(player);
+        if (ip != null && player.username.equals(ip.owner)) {
+            for (String member : ip.members) {
+                SkyBlockDataManager.setIsland(member, ip);
+            }
+        }
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))

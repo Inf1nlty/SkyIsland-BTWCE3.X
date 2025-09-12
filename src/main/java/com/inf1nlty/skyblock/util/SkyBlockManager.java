@@ -3,7 +3,6 @@ package com.inf1nlty.skyblock.util;
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class SkyBlockManager {
 

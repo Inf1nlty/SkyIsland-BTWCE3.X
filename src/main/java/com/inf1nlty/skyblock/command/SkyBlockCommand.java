@@ -913,11 +913,9 @@ public class SkyBlockCommand extends CommandBase {
     }
 
     private void syncAllMembers(SkyBlockPoint island) {
-        EntityPlayerMP owner = getOnlinePlayer(island.owner);
-        if (owner != null) SkyBlockDataManager.setIsland(owner, island);
+        SkyBlockDataManager.setIsland(island.owner, island);
         for (String member : island.members) {
-            EntityPlayerMP p = getOnlinePlayer(member);
-            if (p != null) SkyBlockDataManager.setIsland(p, island);
+            SkyBlockDataManager.setIsland(member, island);
         }
     }
 
