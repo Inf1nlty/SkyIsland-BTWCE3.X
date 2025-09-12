@@ -39,6 +39,9 @@ public class EntityPlayerMPMixin {
         SkyBlockPoint ip = null;
         if (owner != null) {
             ip = SkyBlockDataManager.getIsland(owner);
+            if (ip != null && !ip.members.contains(player.username) && !owner.equals(player.username)) {
+                ip.members.add(player.username);
+            }
         }
         if (ip == null) {
             SkyBlockDataManager.readIslandFromNBT(player, tag);
