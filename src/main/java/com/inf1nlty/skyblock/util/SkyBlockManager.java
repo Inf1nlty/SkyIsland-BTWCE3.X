@@ -3,6 +3,8 @@ package com.inf1nlty.skyblock.util;
 import net.minecraft.src.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SkyBlockManager {
 
@@ -221,4 +223,32 @@ public class SkyBlockManager {
             islandPositionsDirty = false;
         }
     }
+
+    private static final Map<String, String> globalMemberMap = new HashMap<>();
+
+    public static void setGlobalMember(String member, String owner) {
+        if (owner == null) globalMemberMap.remove(member);
+        else globalMemberMap.put(member, owner);
+    }
+    public static String getGlobalMemberOwner(String member) {
+        return globalMemberMap.get(member);
+    }
+    public static void writeGlobalMembersToNBT(NBTTagCompound worldTag) {
+        NBTTagCompound memberTag = new NBTTagCompound();
+        for (Map.Entry<String, String> e : globalMemberMap.entrySet()) {
+            memberTag.setString(e.getKey(), e.getValue());
+        }
+        worldTag.setTag("SkyBlockGlobalMembers", memberTag);
+    }
+    public static void readGlobalMembersFromNBT(NBTTagCompound worldTag) {
+        globalMemberMap.clear();
+        if (!worldTag.hasKey("SkyBlockGlobalMembers")) return;
+        NBTTagCompound memberTag = worldTag.getCompoundTag("SkyBlockGlobalMembers");
+        for (Object tagObj : memberTag.getTags()) {
+            if (tagObj instanceof NBTTagString tag) {
+                globalMemberMap.put(tag.getName(), tag.data);
+            }
+        }
+    }
+
 }

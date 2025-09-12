@@ -13,6 +13,7 @@ import java.util.Set;
 public class SkyBlockDataManager {
     private static final Map<String, SkyBlockPoint> playerIslands = new HashMap<>();
     private static final Set<String> everCreatedIslanders = new HashSet<>();
+    private static final Map<String, String> globalMemberMap = new HashMap<>();
 
     public static SkyBlockPoint getIsland(EntityPlayerMP player) {
         return playerIslands.get(player.username);
@@ -47,6 +48,10 @@ public class SkyBlockDataManager {
             }
         }
         return null;
+    }
+
+    public static SkyBlockPoint getIsland(String username) {
+        return playerIslands.get(username);
     }
 
     public static Iterable<SkyBlockPoint> getAllIslands() {
@@ -150,4 +155,30 @@ public class SkyBlockDataManager {
             everCreatedIslanders.add(player.username);
         }
     }
+
+    public static void setGlobalMember(String member, String owner) {
+        if (owner == null) globalMemberMap.remove(member);
+        else globalMemberMap.put(member, owner);
+    }
+    public static String getGlobalMemberOwner(String member) {
+        return globalMemberMap.get(member);
+    }
+    public static void writeGlobalMembersToNBT(NBTTagCompound worldTag) {
+        NBTTagCompound memberTag = new NBTTagCompound();
+        for (Map.Entry<String, String> e : globalMemberMap.entrySet()) {
+            memberTag.setString(e.getKey(), e.getValue());
+        }
+        worldTag.setTag("SkyBlockGlobalMembers", memberTag);
+    }
+    public static void readGlobalMembersFromNBT(NBTTagCompound worldTag) {
+        globalMemberMap.clear();
+        if (!worldTag.hasKey("SkyBlockGlobalMembers")) return;
+        NBTTagCompound memberTag = worldTag.getCompoundTag("SkyBlockGlobalMembers");
+        for (Object tagObj : memberTag.getTags()) {
+            if (tagObj instanceof NBTTagString tag) {
+                globalMemberMap.put(tag.getName(), tag.data);
+            }
+        }
+    }
+
 }

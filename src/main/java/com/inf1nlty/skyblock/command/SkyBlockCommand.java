@@ -401,6 +401,15 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         pendingDeleteRequests.remove(player.username);
+
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island != null) {
+            for (String member : island.members) {
+                SkyBlockDataManager.setGlobalMember(member, null);
+            }
+            SkyBlockDataManager.setGlobalMember(player.username, null);
+            island.members.clear();
+        }
         SkyBlockDataManager.setIsland(player, null);
         player.sendChatToPlayer(createFormattedMessage("commands.island.delete.success",
                 EnumChatFormatting.GREEN, false, false, false, player.username));
@@ -650,6 +659,7 @@ public class SkyBlockCommand extends CommandBase {
         if (island != null) {
             island.members.add(memberName);
             syncAllMembers(island);
+            SkyBlockDataManager.setGlobalMember(memberName, owner.username);
             EntityPlayerMP member = getOnlinePlayer(memberName);
             if (member != null) {
                 member.sendChatToPlayer(createFormattedMessage("commands.island.join.accepted",
@@ -696,6 +706,7 @@ public class SkyBlockCommand extends CommandBase {
         }
         island.members.remove(memberName);
         syncAllMembers(island);
+        SkyBlockDataManager.setGlobalMember(memberName, null);
         player.sendChatToPlayer(createFormattedMessage("commands.island.remove.success",
                 EnumChatFormatting.GREEN, false, false, false, memberName));
         EntityPlayerMP removed = getOnlinePlayer(memberName);
@@ -734,6 +745,7 @@ public class SkyBlockCommand extends CommandBase {
             island.members.remove(player.username);
             syncAllMembers(island);
             SkyBlockDataManager.setIsland(player, null);
+            SkyBlockDataManager.setGlobalMember(player.username, null);
             pendingLeaveRequests.remove(player.username);
             player.sendChatToPlayer(createFormattedMessage("commands.island.leave.success",
                     EnumChatFormatting.GREEN, false, false, false, player.username));
