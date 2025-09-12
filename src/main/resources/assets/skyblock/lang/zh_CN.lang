@@ -13,6 +13,7 @@ commands.island.delete.already_pending=你已经有一个待确认的岛屿删�
 commands.island.delete.timeout=删除队列超时，空岛未被删除。
 commands.island.delete.nopending=没有待删除的空岛。
 commands.island.delete.success=你的空岛已成功删除。
+commands.island.not_owner=你不是岛主，没有权限进行此操作。
 commands.island.setspawn.success=已成功设置空岛传送点。
 commands.island.setspawn_dim_mismatch=你必须在你的空岛所在维度设置传送点。
 commands.island.setspawn.out_of_bounds=只能在初始传送点 %s 格范围内设置岛屿重生点！
@@ -42,7 +43,6 @@ commands.island.tpa.target_no_island=玩家 %s 还没有空岛，无法传送。
 commands.island.protect.usage=用法: /island protect on|off
 commands.island.protect.enabled=空岛保护区已开启！
 commands.island.protect.disabled=空岛保护区已关闭！
-commands.island.protect.not_owner=你不是岛主，无法设置保护区开关。
 commands.island.protection.kicked=你进入了他人的空岛保护区，被强制弹出！
 commands.island.join.request_sent=已向岛主 %s 发起加入申请，等待对方处理。
 commands.island.join.request=玩家 %s 请求加入你的岛屿，输入 /island accept %s 或 /is a %s 同意，/island deny %s 或 /is d %s 拒绝。
@@ -65,7 +65,6 @@ commands.island.join.already_have_island=你已经拥有自己的岛屿了，不
 commands.island.already_joined_join=你已经是其他岛屿的成员，不能再申请加入他人岛屿。
 commands.island.already_joined_create=你已经加入了其他岛屿，无法创建新的岛屿。
 commands.island.remove.usage=用法：/island remove <成员>
-commands.island.remove.not_owner=你不是岛主，不能移除成员。
 commands.island.remove.not_member=成员 %s 不在你的岛屿内。
 commands.island.remove.success=成功移除成员 %s
 commands.island.remove.kicked=你已被 %s 移出岛屿。
@@ -75,7 +74,6 @@ commands.island.leave.nopending=没有待确认的离岛请求。
 commands.island.leave.success=你已成功离开岛屿。
 commands.island.leave.timeout=离岛请求已超时，请重新操作。
 commands.island.leave.not_member=你还不是岛屿成员，不能离开。
-
 
 island.createworld.voidworld=虚空世界： §c关
 island.createworld.selected=虚空世界： §a开
@@ -90,6 +88,8 @@ commands.island.taunt.7=[SkyBlock] 提示：%s的岛屿又要重建了！
 commands.island.taunt.8=[SkyBlock] 你们有没有发现，%s特别喜欢重置挑战...
 commands.island.taunt.9=[SkyBlock] %s，你是不是忘记怎么经营岛屿了？
 commands.island.taunt.10=[SkyBlock] 一键重开空岛，%s专属技能，羡慕不？
+
+item.ender_eye.disabled_voidworld=末影之眼在虚空世界中无法使用！
 
 commands.island.new.not_enough_money=新建空岛需要花费%s元，余额不足！
 commands.island.new.cost_paid=已花费%s元，正在创建空岛。

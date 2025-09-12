@@ -21,6 +21,9 @@ public abstract class WorldInfoMixin {
      */
     @Inject(method = "<init>(Lnet/minecraft/src/NBTTagCompound;)V", at = @At("TAIL"))
     private void readGlobalIslandData(NBTTagCompound tag, CallbackInfo ci) {
+        SkyBlockManager.clearAll();
+        SkyBlockDataManager.clearAll();
+
         SkyBlockManager.readGlobalIslandData(tag);
         SkyBlockManager.readGlobalMembersFromNBT(tag);
         SkyBlockDataManager.readGlobalMembersFromNBT(tag);

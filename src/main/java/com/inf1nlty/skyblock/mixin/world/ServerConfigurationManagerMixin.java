@@ -44,7 +44,7 @@ public abstract class ServerConfigurationManagerMixin {
      */
     @Inject(method = "transferEntityToWorld", at = @At("HEAD"), cancellable = true)
     private void makePortal1to1(Entity entity, int fromDim, WorldServer oldWorld, WorldServer newWorld, CallbackInfo ci) {
-        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1) {
+        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1 && SkyBlockWorldUtil.isVoidWorldLoaded()) {
             if ((entity.dimension == -1 && fromDim == 0) || (entity.dimension == 0 && fromDim == -1)) {
                 oldWorld.theProfiler.startSection("moving");
                 if (entity.isEntityAlive()) {

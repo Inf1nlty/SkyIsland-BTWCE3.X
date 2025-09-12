@@ -381,6 +381,11 @@ public class SkyBlockCommand extends CommandBase {
                     EnumChatFormatting.RED, false, false, false, player.username));
             return;
         }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                    EnumChatFormatting.RED, false, false, false));
+            return;
+        }
         if (pendingDeleteRequests.containsKey(player.username)) {
             player.sendChatToPlayer(createFormattedMessage("commands.island.delete.already_pending",
                     EnumChatFormatting.YELLOW, false, false, false, player.username));
@@ -408,6 +413,11 @@ public class SkyBlockCommand extends CommandBase {
                 SkyBlockDataManager.setGlobalMember(member, null);
                 SkyBlockDataManager.setIsland(member, null);
             }
+            if (!player.username.equals(island.owner)) {
+                player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                        EnumChatFormatting.RED, false, false, false));
+                return;
+            }
             SkyBlockDataManager.setGlobalMember(player.username, null);
             SkyBlockDataManager.setIsland(player, null);
             island.members.clear();
@@ -426,6 +436,11 @@ public class SkyBlockCommand extends CommandBase {
         if (island == null) {
             player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
                     EnumChatFormatting.RED, false, false, false, player.username));
+            return;
+        }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                    EnumChatFormatting.RED, false, false, false));
             return;
         }
         if (player.dimension != island.dim) {
@@ -459,6 +474,11 @@ public class SkyBlockCommand extends CommandBase {
                 if (island == null) {
                     player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
                             EnumChatFormatting.RED, false, false, false, player.username));
+                    return;
+                }
+                if (!player.username.equals(island.owner)) {
+                    player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                            EnumChatFormatting.RED, false, false, false));
                     return;
                 }
                 island.tpaEnabled = arg.equals("setyes");
@@ -590,7 +610,7 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         if (!player.username.equals(island.owner)) {
-            player.sendChatToPlayer(createMessage("commands.island.protect.not_owner",
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
                     EnumChatFormatting.RED, false, false, false));
             return;
         }

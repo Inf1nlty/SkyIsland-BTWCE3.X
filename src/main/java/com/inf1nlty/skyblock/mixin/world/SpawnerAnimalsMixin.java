@@ -3,6 +3,7 @@ package com.inf1nlty.skyblock.mixin.world;
 import btw.block.BTWBlocks;
 import com.inf1nlty.skyblock.SkyblockConfig;
 import com.inf1nlty.skyblock.mixin.accessor.SpawnerAnimalsAccessor;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,7 +32,7 @@ public class SpawnerAnimalsMixin {
     @Unique
     @SuppressWarnings("unchecked")
     private void spawnSkyblockAnimals(WorldServer world) {
-        if (!SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB) return;
+        if (!(SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB && SkyBlockWorldUtil.isVoidWorldLoaded())) return;
 
         LinkedList<ChunkCoordIntPair> activeChunks = world.getActiveChunksCoordsList();
         int maxAnimals = EnumCreatureType.creature.getMaxNumberOfCreature() * activeChunks.size() / 256;

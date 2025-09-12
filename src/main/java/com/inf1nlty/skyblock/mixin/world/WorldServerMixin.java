@@ -22,7 +22,7 @@ public class WorldServerMixin {
 
     @ModifyArg(method= "tick", at=@At(value="INVOKE", target="Lnet/minecraft/src/SpawnerAnimals;findChunksForSpawning(Lnet/minecraft/src/WorldServer;ZZZ)I"), index=3)
     public boolean allowSpawnAnimal(boolean spawnAnimal) {
-        return SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB || spawnAnimal;
+        return (SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB && SkyBlockWorldUtil.isVoidWorldLoaded()) || spawnAnimal;
     }
 
 }

@@ -255,4 +255,10 @@ public class SkyBlockManager {
         }
     }
 
+    public static void clearAll() {
+        spIslands.clear();
+        usedIslandPositions.clear();
+        globalMemberMap.clear();
+    }
+
 }

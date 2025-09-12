@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.entity;
 
 import com.inf1nlty.skyblock.SkyblockConfig;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.Entity;
 import net.minecraft.src.WorldServer;
@@ -14,7 +15,7 @@ public abstract class EntityMixin {
     @Inject(method = "travelToDimension", at = @At("HEAD"), cancellable = true)
     private void forceSkyblockTravel(int dimension, CallbackInfo ci) {
         Entity entity = (Entity)(Object)this;
-        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1) {
+        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1 && SkyBlockWorldUtil.isVoidWorldLoaded()) {
             if ((entity.dimension == -1 && dimension == 0) || (entity.dimension == 0 && dimension == -1)) {
                 MinecraftServer server = MinecraftServer.getServer();
                 WorldServer newWorld = server.worldServerForDimension(dimension);

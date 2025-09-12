@@ -186,4 +186,10 @@ public class SkyBlockDataManager {
         }
     }
 
+    public static void clearAll() {
+        playerIslands.clear();
+        everCreatedIslanders.clear();
+        globalMemberMap.clear();
+    }
+
 }

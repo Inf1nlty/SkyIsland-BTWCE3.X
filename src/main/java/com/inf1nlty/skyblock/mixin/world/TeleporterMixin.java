@@ -1,6 +1,7 @@
 package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.SkyblockConfig;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.Teleporter;
 import net.minecraft.src.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TeleporterMixin {
     @Inject(method = "placeInPortal", at = @At("HEAD"), cancellable = true)
     private void forceOneToOnePortal(Entity entity, double d, double e, double f, float g, CallbackInfo ci) {
-        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1) {
+        if (SkyblockConfig.OVERWORLD_NETHER_COORD_RATIO_1_1 && SkyBlockWorldUtil.isVoidWorldLoaded()) {
             if (entity.dimension == 0 || entity.dimension == -1) {
                 Teleporter self = (Teleporter) (Object) this;
                 if (!self.placeInExistingPortal(entity, entity.posX, entity.posY, entity.posZ, g)) {
