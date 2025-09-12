@@ -406,9 +406,11 @@ public class SkyBlockCommand extends CommandBase {
         if (island != null) {
             for (String member : island.members) {
                 SkyBlockDataManager.setGlobalMember(member, null);
+                SkyBlockDataManager.setIsland(member, null);
             }
             SkyBlockDataManager.setGlobalMember(player.username, null);
             island.members.clear();
+            syncAllMembers(island);
         }
         SkyBlockDataManager.setIsland(player, null);
         player.sendChatToPlayer(createFormattedMessage("commands.island.delete.success",
