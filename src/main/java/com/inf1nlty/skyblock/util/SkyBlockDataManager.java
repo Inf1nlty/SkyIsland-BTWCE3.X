@@ -84,7 +84,7 @@ public class SkyBlockDataManager {
      */
     public static void writeIslandToNBT(EntityPlayerMP player, NBTTagCompound tag) {
         SkyBlockPoint ip = getIsland(player);
-        if (ip == null) return;
+        if (ip == null || !player.username.equals(ip.owner)) return;
         NBTTagCompound islandTag = new NBTTagCompound();
         islandTag.setBoolean("exists", true);
         islandTag.setInteger("x", ip.x);
