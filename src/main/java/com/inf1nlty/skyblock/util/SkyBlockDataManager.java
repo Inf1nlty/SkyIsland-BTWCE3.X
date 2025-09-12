@@ -1,5 +1,6 @@
 package com.inf1nlty.skyblock.util;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
 import java.util.HashMap;
@@ -30,6 +31,10 @@ public class SkyBlockDataManager {
             playerIslands.put(player.username, ip);
             everCreatedIslanders.add(player.username);
         }
+        NBTTagCompound tag = new NBTTagCompound();
+        writeIslandToNBT(player, tag);
+        player.writeToNBT(tag);
+        MinecraftServer.getServer().getConfigurationManager().writePlayerData(player);
     }
 
     public static void setIsland(String username, SkyBlockPoint ip) {
@@ -99,7 +104,7 @@ public class SkyBlockDataManager {
         islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         NBTTagList memberList = new NBTTagList();
-        for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
+        for (String member : ip.members) memberList.appendTag(new NBTTagString(member, member));
         islandTag.setTag("members", memberList);
         islandTag.setBoolean("protectEnabled", ip.protectEnabled);
         tag.setTag("SkyIsland", islandTag);

@@ -187,7 +187,7 @@ public class SkyBlockManager {
         islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         NBTTagList memberList = new NBTTagList();
-        for (String member : ip.members) memberList.appendTag(new NBTTagString(member));
+        for (String member : ip.members) memberList.appendTag(new NBTTagString(member, member));
         islandTag.setTag("members", memberList);
         islandTag.setBoolean("protectEnabled", ip.protectEnabled);
         tag.setTag("SkyIsland", islandTag);

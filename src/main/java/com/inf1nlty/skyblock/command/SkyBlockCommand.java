@@ -645,7 +645,7 @@ public class SkyBlockCommand extends CommandBase {
 
         owner.sendChatToPlayer(createFormattedMessage("commands.island.join.request",
                 EnumChatFormatting.AQUA, false, false, false,
-                player.username, "accept", "a", "deny", "d"));
+                player.username, player.username, player.username, player.username, player.username));
     }
 
     private void handleAccept(EntityPlayerMP owner, String memberName) {
@@ -928,9 +928,6 @@ public class SkyBlockCommand extends CommandBase {
 
     private void syncAllMembers(SkyBlockPoint island) {
         SkyBlockDataManager.setIsland(island.owner, island);
-        for (String member : island.members) {
-            SkyBlockDataManager.setIsland(member, island);
-        }
     }
 
     public static ChatMessageComponent createMessage(String key, EnumChatFormatting color, boolean bold, boolean italic, boolean underline) {
