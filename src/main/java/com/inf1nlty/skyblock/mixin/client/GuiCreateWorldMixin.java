@@ -15,6 +15,9 @@ public class GuiCreateWorldMixin {
     @Unique
     private boolean skyBlockSelected = false;
 
+    @Unique
+    private GuiButton skyIslandButton;
+
     @SuppressWarnings("unchecked")
     @Inject(method = "initGui", at = @At("TAIL"))
     private void onInitGui(CallbackInfo ci) {
@@ -25,8 +28,17 @@ public class GuiCreateWorldMixin {
         int btnW = 150;
         int btnH = 20;
         String btnText = I18n.getString("island.createworld.voidworld");
-        GuiButton skyIslandButton = new GuiButton(btnId, btnX, btnY, btnW, btnH, btnText);
+        skyIslandButton = new GuiButton(btnId, btnX, btnY, btnW, btnH, btnText);
+        skyIslandButton.drawButton = !self.moreOptions;
         self.buttonList.add(skyIslandButton);
+    }
+
+    @Inject(method = "func_82288_a", at = @At("TAIL"))
+    private void onToggleMoreOptions(boolean showMore, CallbackInfo ci) {
+        GuiCreateWorld self = (GuiCreateWorld) (Object) this;
+        if (skyIslandButton != null) {
+            skyIslandButton.drawButton = !self.moreOptions;
+        }
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
