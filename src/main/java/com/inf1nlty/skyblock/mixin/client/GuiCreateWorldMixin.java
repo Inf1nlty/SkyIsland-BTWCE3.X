@@ -24,7 +24,7 @@ public class GuiCreateWorldMixin {
         GuiCreateWorld self = (GuiCreateWorld) (Object) this;
         int btnId = 10086;
         int btnX = self.width / 2 - 75;
-        int btnY = self.height / 6 + 94;
+        int btnY = 160;
         int btnW = 150;
         int btnH = 20;
         String btnText = I18n.getString("island.createworld.voidworld");
