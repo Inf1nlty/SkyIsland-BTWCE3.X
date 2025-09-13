@@ -1,5 +1,6 @@
 package com.inf1nlty.skyblock.mixin.world;
 
+import btw.item.items.EmeraldPileItem;
 import com.inf1nlty.skyblock.command.SkyBlockCommand;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
@@ -8,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ItemEnderEye.class)
-public class ItemEnderEyeMixin {
+@Mixin(EmeraldPileItem.class)
+public class EmeraldPileItemMixin {
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)
     private void onItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {

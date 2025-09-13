@@ -89,7 +89,7 @@ commands.island.taunt.8=[SkyBlock] 你们有没有发现，%s特别喜欢重置�
 commands.island.taunt.9=[SkyBlock] %s，你是不是忘记怎么经营岛屿了？
 commands.island.taunt.10=[SkyBlock] 一键重开空岛，%s专属技能，羡慕不？
 
-item.ender_eye.disabled_voidworld=末影之眼在虚空世界中无法使用！
+item.disabled_voidworld=此物品在虚空世界中无法使用！
 
 commands.island.new.not_enough_money=新建空岛需要花费%s元，余额不足！
 commands.island.new.cost_paid=已花费%s元，正在创建空岛。

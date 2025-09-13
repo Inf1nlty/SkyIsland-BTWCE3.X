@@ -89,7 +89,7 @@ commands.island.taunt.8=Has anyone noticed that %s loves resetting challenges?
 commands.island.taunt.9=%s, did you forget how to manage your island?
 commands.island.taunt.10=Instant island reset, %s's exclusive skill. Impressive!
 
-item.ender_eye.disabled_voidworld=Ender Eye is disabled in Void World!
+item.disabled_voidworld=This item is disabled in Void World!
 
 commands.island.new.not_enough_money=You need cost %s$ to create a new island. Insufficient balance!
 commands.island.new.cost_paid=%s$ have been deducted for creating a new island.
