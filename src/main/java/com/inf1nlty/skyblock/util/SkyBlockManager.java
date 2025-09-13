@@ -10,38 +10,18 @@ public class SkyBlockManager {
 
     public static final int ISLAND_Y = 100;
     public static final double ISLAND_X_OFFSET = 0;
-    public static final double ISLAND_Y_OFFSET = -19;
+    public static final double ISLAND_Y_OFFSET = 0;
     public static final double ISLAND_Z_OFFSET = 0;
     public static final double SPAWN_X_OFFSET = 7.0;
-    public static final double SPAWN_Y_OFFSET = -0.9;
-    public static final double SPAWN_Z_OFFSET = 6.0;
+    public static final double SPAWN_Y_OFFSET = 0;
+    public static final double SPAWN_Z_OFFSET = 8.0;
 
     private static final java.util.Set<String> usedIslandPositions = new java.util.HashSet<>();
 
-    public static final String SCHEMATIC_PATH = "assets/skyblock/Island01.schematic";
+    public static final String SCHEMATIC_PATH = "assets/skyblock/island02.schematic";
 
     private static boolean islandPositionsDirty = false;
 
-    private static SchematicData parseNBT(NBTTagCompound nbt) {
-        int width = nbt.getShort("Width");
-        int length = nbt.getShort("Length");
-        int height = nbt.getShort("Height");
-        byte[] blocks = nbt.getByteArray("Blocks");
-        byte[] data = nbt.getByteArray("Data");
-        byte[] addBlocks = nbt.hasKey("AddBlocks") ? nbt.getByteArray("AddBlocks") : null;
-        ArrayList<NBTTagCompound> tileEntities = new ArrayList<>();
-        NBTTagList teList = nbt.getTagList("TileEntities");
-        for (int i = 0; i < teList.tagCount(); ++i) {
-            tileEntities.add((NBTTagCompound) teList.tagAt(i));
-        }
-        return new SchematicData(width, length, height, blocks, data, addBlocks, tileEntities);
-    }
-
-    /**
-     * Allocates a new, unique island for a player (always assigns a new island).
-     * Islands are distributed in concentric rings around (0,0), with each island spaced 2500 blocks apart.
-     * Each island position is guaranteed to be unique and never reused.
-     */
     public static final int ISLAND_DISTANCE = 2500;
     public static final int MAX_RING = 100;
     public static final int ISLANDS_PER_RING = 8;
@@ -128,15 +108,43 @@ public class SkyBlockManager {
         }
     }
 
+    /**
+     * Find the minimum Y coordinate of all water lilies in the specified schematic (as the island base layer)
+     */
+    public static int findLilyPadMinY(SchematicData schematic, int lilyPadBlockId) {
+        int minY = schematic.height;
+        for (int y = 0; y < schematic.height; y++) {
+            for (int z = 0; z < schematic.length; z++) {
+                for (int x = 0; x < schematic.width; x++) {
+                    int idx = (y * schematic.length + z) * schematic.width + x;
+                    int blockId = schematic.getBlockId(idx);
+                    if (blockId == lilyPadBlockId) {
+                        if (y < minY) minY = y;
+                    }
+                }
+            }
+        }
+        return minY;
+    }
+
+    /**
+     * Align the ISLAND_Y plane with the lily pad
+     */
     public static void generateIsland(World world, SkyBlockPoint island) {
         int baseX = (int)(island.x + ISLAND_X_OFFSET);
-        int baseY = (int)(island.y + ISLAND_Y_OFFSET);
         int baseZ = (int)(island.z + ISLAND_Z_OFFSET);
 
         SchematicData schematic = SchematicData.loadSchematic(SCHEMATIC_PATH);
         if (schematic == null) {
             throw new RuntimeException("Schematic file not found: " + SCHEMATIC_PATH);
         }
+
+        int lilyPadBlockId = Block.waterlily.blockID;
+        int lilyPadY = findLilyPadMinY(schematic, lilyPadBlockId);
+        if (lilyPadY == schematic.height) {
+            throw new RuntimeException("Schematic does not detect water lilies as a base layer!");
+        }
+        int baseY = ISLAND_Y - lilyPadY;
 
         for (int y = 0; y < schematic.height; y++) {
             for (int z = 0; z < schematic.length; z++) {
