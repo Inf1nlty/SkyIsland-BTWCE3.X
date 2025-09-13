@@ -21,4 +21,19 @@ public class WorldProviderMixin {
             cir.setReturnValue(new VoidWorldChunkProvider(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled()));
         }
     }
+
+    @Inject(method = "getWorldHasVoidParticles", at = @At("HEAD"), cancellable = true)
+    private void patchVoidParticles(CallbackInfoReturnable<Boolean> cir) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "getVoidFogYFactor", at = @At("HEAD"), cancellable = true)
+    private void patchVoidFogYFactor(CallbackInfoReturnable<Double> cir) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            cir.setReturnValue(1.0D);
+        }
+    }
+
 }

@@ -21,6 +21,7 @@
     "world.SpawnerAnimalsMixin",
     "world.TeleporterMixin",
     "world.WorldInfoMixin",
+    "world.WorldMixin",
     "world.WorldProviderMixin",
     "world.WorldServerMixin"
   ],
