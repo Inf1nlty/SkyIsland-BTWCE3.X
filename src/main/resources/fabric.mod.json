@@ -22,7 +22,7 @@
     ]
   },
   "custom": {
-    "btw:addon_prefix": "XPT"
+    "btw:addon_prefix": "SB"
   },
   "mixins": [
     "skyblock.mixins.json"
