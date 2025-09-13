@@ -18,8 +18,10 @@ public abstract class ServerConfigurationManagerMixin {
     @Inject(method = "respawnPlayer", at = @At("RETURN"))
     private void forceVoidWorldRespawn(EntityPlayerMP oldPlayer, int iDefaultDimension, boolean playerLeavingTheEnd, CallbackInfoReturnable<EntityPlayerMP> cir) {
         EntityPlayerMP newPlayer = cir.getReturnValue();
-        WorldServer world = newPlayer.mcServer.worldServerForDimension(newPlayer.dimension);
-        if (SkyBlockWorldUtil.isVoidWorld(world) && newPlayer.dimension == 0) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            if (newPlayer.dimension != 0) {
+                newPlayer.mcServer.getConfigurationManager().transferPlayerToDimension(newPlayer, 0);
+            }
             SkyBlockPoint island = SkyBlockDataManager.getIsland(newPlayer);
             if (island == null) {
                 island = SkyBlockDataManager.getIslandForMember(newPlayer);

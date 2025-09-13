@@ -19,7 +19,7 @@ public class HardcoreSpawnUtilsMixin {
     @Inject(method = "handleHardcoreSpawn", at = @At("HEAD"), cancellable = true)
     private static void forceVoidWorldRespawn(MinecraftServer server, EntityPlayerMP oldPlayer, EntityPlayerMP newPlayer, CallbackInfo ci) {
         WorldServer mainWorld = server.worldServerForDimension(0);
-        if (!SkyBlockWorldUtil.isVoidWorld(mainWorld)) {
+        if (!SkyBlockWorldUtil.isVoidWorldLoaded()) {
             return;
         }
         SkyBlockPoint island = SkyBlockDataManager.getIsland(newPlayer);

@@ -13,7 +13,7 @@ public class ItemEnderEyeMixin {
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)
     private void onItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {
-        if (SkyBlockWorldUtil.isVoidOverworld(world)) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
             if (!world.isRemote && player instanceof EntityPlayerMP) {
                 ChatMessageComponent msg = SkyBlockCommand.createMessage(
                         "item.disabled_voidworld",

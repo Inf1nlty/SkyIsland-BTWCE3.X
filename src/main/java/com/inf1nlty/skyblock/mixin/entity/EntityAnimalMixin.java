@@ -27,7 +27,7 @@ public abstract class EntityAnimalMixin {
         int y = MathHelper.floor_double(boundingBox.minY);
         int z = MathHelper.floor_double(posZ);
 
-        if (SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB && SkyBlockWorldUtil.isVoidWorld(world)) {
+        if (SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB && SkyBlockWorldUtil.isVoidWorldLoaded()) {
             // Only valid if the block below is a grass slab and light level is sufficient
             boolean validSlab = world.getBlockId(x, y - 1, z) == BTWBlocks.grassSlab.blockID;
             if (validSlab && world.getFullBlockLightValue(x, y, z) > 8) {

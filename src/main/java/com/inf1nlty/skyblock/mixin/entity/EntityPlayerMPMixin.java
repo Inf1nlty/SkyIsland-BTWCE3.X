@@ -49,7 +49,7 @@ public class EntityPlayerMPMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void forceVoidWorldPlayerSpawn(MinecraftServer par1MinecraftServer, World par2World, String par3Str, ItemInWorldManager par4ItemInWorldManager, CallbackInfo ci) {
-        if (SkyBlockWorldUtil.isVoidWorld(par2World)) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
             ((EntityPlayerMP)(Object)this).setLocationAndAngles(0.5, 101.0, 0.5, 0.0F, 0.0F);
         }
     }
