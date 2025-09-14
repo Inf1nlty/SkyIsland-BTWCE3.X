@@ -1,6 +1,6 @@
 package com.inf1nlty.skyblock.mixin.world;
 
-import com.inf1nlty.skyblock.VoidWorldChunkProvider;
+import com.inf1nlty.skyblock.util.VoidWorldChunkProvider;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldProvider;

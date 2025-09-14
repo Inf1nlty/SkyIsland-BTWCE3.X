@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin.world;
+package com.inf1nlty.skyblock.mixin.world.item;
 
 import btw.item.items.BucketItemLava;
 import btw.util.MiscUtils;

@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin.entity;
+package com.inf1nlty.skyblock.mixin.world.entity;
 
 import com.inf1nlty.skyblock.SkyblockConfig;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;

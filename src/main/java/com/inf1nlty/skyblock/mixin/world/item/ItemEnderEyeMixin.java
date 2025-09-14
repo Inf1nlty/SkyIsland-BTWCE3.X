@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin.world;
+package com.inf1nlty.skyblock.mixin.world.item;
 
 import com.inf1nlty.skyblock.command.SkyBlockCommand;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;

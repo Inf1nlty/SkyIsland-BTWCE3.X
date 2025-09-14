@@ -1,6 +1,5 @@
-package com.inf1nlty.skyblock;
+package com.inf1nlty.skyblock.util;
 
-import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
 
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin.world;
+package com.inf1nlty.skyblock.mixin.world.block;
 
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.BlockIce;
