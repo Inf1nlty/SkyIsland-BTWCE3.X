@@ -24,9 +24,7 @@ public class SkyBlockManager {
 
     private static boolean islandPositionsDirty = false;
 
-    public static final int ISLAND_DISTANCE = 2500;
     public static final int MAX_RING = 100;
-    public static final int ISLANDS_PER_RING = 8;
 
     private static class RegionId {
         public final int x, z;
@@ -46,60 +44,32 @@ public class SkyBlockManager {
     }
 
     private static ArrayList<RegionId> getRegionIdsForRing(int ring) {
+
         ArrayList<RegionId> result = new ArrayList<>();
-        if (ring == 1) {
-            result.add(new RegionId( 4, 0));
-            result.add(new RegionId(-4, 0));
-            result.add(new RegionId(0,  4));
-            result.add(new RegionId(0, -4));
-        } else if (ring == 2) {
-            result.add(new RegionId( 8, 0));
-            result.add(new RegionId(-8, 0));
-            result.add(new RegionId(0,  8));
-            result.add(new RegionId(0, -8));
-            result.add(new RegionId( 4,  4));
-            result.add(new RegionId(-4,  4));
-            result.add(new RegionId( 4, -4));
-            result.add(new RegionId(-4, -4));
-        } else if (ring == 3) {
-            result.add(new RegionId( 12, 0));
-            result.add(new RegionId(-12, 0));
-            result.add(new RegionId(0, 12));
-            result.add(new RegionId(0, -12));
-            result.add(new RegionId( 8,  4));
-            result.add(new RegionId( 8, -4));
-            result.add(new RegionId(-8,  4));
-            result.add(new RegionId(-8, -4));
-            result.add(new RegionId( 4,  8));
-            result.add(new RegionId( 4, -8));
-            result.add(new RegionId(-4,  8));
-            result.add(new RegionId(-4, -8));
-        } else if (ring == 4) {
-            result.add(new RegionId( 16, 0));
-            result.add(new RegionId(-16, 0));
-            result.add(new RegionId(0, 16));
-            result.add(new RegionId(0, -16));
-            result.add(new RegionId( 12,  4));
-            result.add(new RegionId( 12, -4));
-            result.add(new RegionId(-12,  4));
-            result.add(new RegionId(-12, -4));
-            result.add(new RegionId( 8,  8));
-            result.add(new RegionId( 8, -8));
-            result.add(new RegionId(-8,  8));
-            result.add(new RegionId(-8, -8));
-            result.add(new RegionId( 4, 12));
-            result.add(new RegionId( 4, -12));
-            result.add(new RegionId(-4, 12));
-            result.add(new RegionId(-4, -12));
+        int R = ring * 4;
+
+        result.add(new RegionId(R, 0));
+        result.add(new RegionId(-R, 0));
+        result.add(new RegionId(0, R));
+        result.add(new RegionId(0, -R));
+
+        // Bevel and other points on the ring
+        for (int i = 1; i < ring; i++) {
+            int x = i * 4;
+            int y = R - x;
+            result.add(new RegionId(x, y));
+            result.add(new RegionId(-x, y));
+            result.add(new RegionId(x, -y));
+            result.add(new RegionId(-x, -y));
+            result.add(new RegionId(y, x));
+            result.add(new RegionId(-y, x));
+            result.add(new RegionId(y, -x));
+            result.add(new RegionId(-y, -x));
         }
-        // 可继续添加更多环
         return result;
     }
 
     public static SkyBlockPoint makeIsland(EntityPlayerMP player, WorldServer world) {
-        SkyBlockPoint existing = SkyBlockDataManager.getIsland(player);
-        if (existing != null) return existing;
-
         for (int ring = 1; ring <= MAX_RING; ring++) {
             ArrayList<RegionId> regions = getRegionIdsForRing(ring);
             ArrayList<RegionId> candidates = new ArrayList<>();
@@ -114,8 +84,8 @@ public class SkyBlockManager {
                 usedIslandPositions.add(chosen.toString());
                 islandPositionsDirty = true;
                 writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
-                int x = chosen.x * ISLAND_DISTANCE;
-                int z = chosen.z * ISLAND_DISTANCE;
+                int x = chosen.x * 512;
+                int z = chosen.z * 512;
                 SkyBlockPoint ip = new SkyBlockPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
                 SkyBlockDataManager.setIsland(player, ip);
                 return ip;
@@ -125,12 +95,9 @@ public class SkyBlockManager {
     }
 
     public static void freeIslandRegions(SkyBlockPoint island) {
-        int rx = island.x / ISLAND_DISTANCE;
-        int rz = island.z / ISLAND_DISTANCE;
+        int rx = island.x / 512;
+        int rz = island.z / 512;
         usedIslandPositions.remove((rx)   + ":" + (rz));
-        usedIslandPositions.remove((rx-1) + ":" + (rz));
-        usedIslandPositions.remove((rx)   + ":" + (rz-1));
-        usedIslandPositions.remove((rx-1) + ":" + (rz-1));
         islandPositionsDirty = true;
     }
 
@@ -156,16 +123,19 @@ public class SkyBlockManager {
             handler.flush();
         }
 
-        File regionFile = new File(worldDir, "region/r." + regionX + "." + regionZ + ".mca");
-        RegionFileHelper.closeRegionFile(regionFile);
-
-        boolean deleted = false;
-        if (regionFile.exists()) {
-            deleted = regionFile.delete();
-        }
-        System.out.println("Delete region file: " + regionFile.getAbsolutePath() + " result: " + deleted);
-        if (!deleted && regionFile.exists()) {
-            System.out.println("Warning: The file could not be deleted. It is recommended to clean it up manually after restarting!");
+        // Delete the center and its left/bottom/lower-left four regions
+        for (int dx = 0; dx <= 1; dx++) {
+            for (int dz = 0; dz <= 1; dz++) {
+                File regionFile = new File(worldDir, "region/r." + (regionX - dx) + "." + (regionZ - dz) + ".mca");
+                RegionFileHelper.closeRegionFile(regionFile);
+                if (regionFile.exists()) {
+                    boolean deleted = regionFile.delete();
+                    System.out.println("Delete region file: " + regionFile.getAbsolutePath() + " result: " + deleted);
+                    if (!deleted) {
+                        System.out.println("Warning: The file could not be deleted. It is recommended to clean it up manually after restarting!");
+                    }
+                }
+            }
         }
     }
 

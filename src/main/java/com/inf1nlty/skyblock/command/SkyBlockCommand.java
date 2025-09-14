@@ -449,8 +449,10 @@ public class SkyBlockCommand extends CommandBase {
             WorldServer world = MinecraftServer.getServer().worldServers[0];
             ISaveHandler saveHandler = world.getSaveHandler();
             String worldDirName = saveHandler.getWorldDirectoryName();
-            File savesDir = new File(MinecraftServer.getServer().getFile("."), "saves");
-            File worldDir = new File(savesDir, worldDirName);
+            File worldDir = new File("saves", worldDirName);
+            if (!worldDir.exists()) {
+                worldDir = new File(worldDirName);
+            }
 
             SkyBlockManager.freeIslandRegions(island);
             pendingIslandDeletes.put(player.username, new DeleteTask(island, worldDir, world, 60));
