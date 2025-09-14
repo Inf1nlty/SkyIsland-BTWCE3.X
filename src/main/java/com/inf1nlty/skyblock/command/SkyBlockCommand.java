@@ -6,6 +6,7 @@ import com.inf1nlty.skyblock.util.SkyBlockPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -444,6 +445,15 @@ public class SkyBlockCommand extends CommandBase {
             SkyBlockDataManager.setGlobalMember(player.username, null);
             SkyBlockDataManager.setIsland(player, null);
             island.members.clear();
+
+            WorldServer world = MinecraftServer.getServer().worldServers[0];
+            ISaveHandler saveHandler = world.getSaveHandler();
+            String worldDirName = saveHandler.getWorldDirectoryName();
+            File savesDir = new File(MinecraftServer.getServer().getFile("."), "saves");
+            File worldDir = new File(savesDir, worldDirName);
+
+            SkyBlockManager.freeIslandRegions(island);
+            pendingIslandDeletes.put(player.username, new DeleteTask(island, worldDir, world, 60));
         }
         player.sendChatToPlayer(createFormattedMessage("commands.island.delete.success",
                 EnumChatFormatting.GREEN, false, false, false, player.username));
@@ -810,6 +820,21 @@ public class SkyBlockCommand extends CommandBase {
         }
     }
 
+    private static final Map<String, DeleteTask> pendingIslandDeletes = new HashMap<>();
+
+    public static class DeleteTask {
+        public final SkyBlockPoint island;
+        public final File worldDir;
+        public final WorldServer world;
+        public int ticksLeft;
+        public DeleteTask(SkyBlockPoint island, File worldDir, WorldServer world, int delayTicks) {
+            this.island = island;
+            this.worldDir = worldDir;
+            this.world = world;
+            this.ticksLeft = delayTicks;
+        }
+    }
+
     /**
      * Server tick handler for delayed island creation, deletion timeout, and pending teleports.
      * Should be called each tick from mod/server code.
@@ -894,6 +919,17 @@ public class SkyBlockCommand extends CommandBase {
                             EnumChatFormatting.RED, false, false, false, player.username));
                 }
                 itDelete.remove();
+            }
+        }
+
+        Iterator<Map.Entry<String, DeleteTask>> itDel = pendingIslandDeletes.entrySet().iterator();
+        while (itDel.hasNext()) {
+            Map.Entry<String, DeleteTask> entry = itDel.next();
+            DeleteTask task = entry.getValue();
+            task.ticksLeft--;
+            if (task.ticksLeft <= 0) {
+                SkyBlockManager.deleteIslandRegionFile(task.island, task.worldDir, task.world);
+                itDel.remove();
             }
         }
 

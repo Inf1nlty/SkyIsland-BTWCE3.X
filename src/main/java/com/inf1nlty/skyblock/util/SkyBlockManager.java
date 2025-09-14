@@ -2,9 +2,11 @@ package com.inf1nlty.skyblock.util;
 
 import net.minecraft.src.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 public class SkyBlockManager {
 
@@ -26,27 +28,145 @@ public class SkyBlockManager {
     public static final int MAX_RING = 100;
     public static final int ISLANDS_PER_RING = 8;
 
+    private static class RegionId {
+        public final int x, z;
+        public RegionId(int x, int z) { this.x = x; this.z = z; }
+        @Override public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof RegionId)) return false;
+            RegionId other = (RegionId)o;
+            return x == other.x && z == other.z;
+        }
+        @Override public int hashCode() { return 31 * x + z; }
+        @Override public String toString() { return x + ":" + z; }
+        public static RegionId fromString(String s) {
+            String[] arr = s.split(":");
+            return new RegionId(Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
+        }
+    }
+
+    private static ArrayList<RegionId> getRegionIdsForRing(int ring) {
+        ArrayList<RegionId> result = new ArrayList<>();
+        if (ring == 1) {
+            result.add(new RegionId( 4, 0));
+            result.add(new RegionId(-4, 0));
+            result.add(new RegionId(0,  4));
+            result.add(new RegionId(0, -4));
+        } else if (ring == 2) {
+            result.add(new RegionId( 8, 0));
+            result.add(new RegionId(-8, 0));
+            result.add(new RegionId(0,  8));
+            result.add(new RegionId(0, -8));
+            result.add(new RegionId( 4,  4));
+            result.add(new RegionId(-4,  4));
+            result.add(new RegionId( 4, -4));
+            result.add(new RegionId(-4, -4));
+        } else if (ring == 3) {
+            result.add(new RegionId( 12, 0));
+            result.add(new RegionId(-12, 0));
+            result.add(new RegionId(0, 12));
+            result.add(new RegionId(0, -12));
+            result.add(new RegionId( 8,  4));
+            result.add(new RegionId( 8, -4));
+            result.add(new RegionId(-8,  4));
+            result.add(new RegionId(-8, -4));
+            result.add(new RegionId( 4,  8));
+            result.add(new RegionId( 4, -8));
+            result.add(new RegionId(-4,  8));
+            result.add(new RegionId(-4, -8));
+        } else if (ring == 4) {
+            result.add(new RegionId( 16, 0));
+            result.add(new RegionId(-16, 0));
+            result.add(new RegionId(0, 16));
+            result.add(new RegionId(0, -16));
+            result.add(new RegionId( 12,  4));
+            result.add(new RegionId( 12, -4));
+            result.add(new RegionId(-12,  4));
+            result.add(new RegionId(-12, -4));
+            result.add(new RegionId( 8,  8));
+            result.add(new RegionId( 8, -8));
+            result.add(new RegionId(-8,  8));
+            result.add(new RegionId(-8, -8));
+            result.add(new RegionId( 4, 12));
+            result.add(new RegionId( 4, -12));
+            result.add(new RegionId(-4, 12));
+            result.add(new RegionId(-4, -12));
+        }
+        // 可继续添加更多环
+        return result;
+    }
+
     public static SkyBlockPoint makeIsland(EntityPlayerMP player, WorldServer world) {
         SkyBlockPoint existing = SkyBlockDataManager.getIsland(player);
         if (existing != null) return existing;
-        for (int ring = 0; ring < MAX_RING; ring++) {
-            int radius = ISLAND_DISTANCE * (ring + 1);
-            for (int idx = 0; idx < ISLANDS_PER_RING; idx++) {
-                double angle = 2 * Math.PI * idx / ISLANDS_PER_RING;
-                int x = (int) Math.round(radius * Math.cos(angle));
-                int z = (int) Math.round(radius * Math.sin(angle));
-                String posKey = world.provider.dimensionId + ":" + x + ":" + z;
-                if (!usedIslandPositions.contains(posKey)) {
-                    usedIslandPositions.add(posKey);
-                    islandPositionsDirty = true;
-                    writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
-                    SkyBlockPoint ip = new SkyBlockPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
-                    SkyBlockDataManager.setIsland(player, ip);
-                    return ip;
+
+        for (int ring = 1; ring <= MAX_RING; ring++) {
+            ArrayList<RegionId> regions = getRegionIdsForRing(ring);
+            ArrayList<RegionId> candidates = new ArrayList<>();
+            for (RegionId region : regions) {
+                if (!usedIslandPositions.contains(region.toString())) {
+                    candidates.add(region);
                 }
+            }
+            if (!candidates.isEmpty()) {
+                Collections.shuffle(candidates);
+                RegionId chosen = candidates.get(0);
+                usedIslandPositions.add(chosen.toString());
+                islandPositionsDirty = true;
+                writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
+                int x = chosen.x * ISLAND_DISTANCE;
+                int z = chosen.z * ISLAND_DISTANCE;
+                SkyBlockPoint ip = new SkyBlockPoint(player.username, x, ISLAND_Y, z, world.provider.dimensionId);
+                SkyBlockDataManager.setIsland(player, ip);
+                return ip;
             }
         }
         throw new RuntimeException("No island locations available!");
+    }
+
+    public static void freeIslandRegions(SkyBlockPoint island) {
+        int rx = island.x / ISLAND_DISTANCE;
+        int rz = island.z / ISLAND_DISTANCE;
+        usedIslandPositions.remove((rx)   + ":" + (rz));
+        usedIslandPositions.remove((rx-1) + ":" + (rz));
+        usedIslandPositions.remove((rx)   + ":" + (rz-1));
+        usedIslandPositions.remove((rx-1) + ":" + (rz-1));
+        islandPositionsDirty = true;
+    }
+
+    public static void deleteIslandRegionFile(SkyBlockPoint island, File worldDir, WorldServer world) {
+        int regionX = Math.floorDiv(island.x, 512);
+        int regionZ = Math.floorDiv(island.z, 512);
+
+        int minChunkX = regionX * 32;
+        int maxChunkX = minChunkX + 31;
+        int minChunkZ = regionZ * 32;
+        int maxChunkZ = minChunkZ + 31;
+
+        for (int cx = minChunkX; cx <= maxChunkX; cx++) {
+            for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+                if (world.theChunkProviderServer.chunkExists(cx, cz)) {
+                    world.theChunkProviderServer.forceAddToChunksToUnload(cx, cz);
+                }
+            }
+        }
+
+        ISaveHandler handler = world.getSaveHandler();
+        if (handler instanceof AnvilSaveHandler) {
+            handler.flush();
+        }
+
+        File regionFile = new File(worldDir, "region/r." + regionX + "." + regionZ + ".mca");
+        RegionFileHelper.closeRegionFile(regionFile);
+
+        boolean deleted = false;
+        if (regionFile.exists()) {
+            deleted = regionFile.delete();
+        }
+        System.out.println("Delete region file: " + regionFile.getAbsolutePath() + " result: " + deleted);
+        if (!deleted && regionFile.exists()) {
+            System.out.println("Warning: The file could not be deleted. It is recommended to clean it up manually after restarting!");
+        }
     }
 
     public static SkyBlockPoint getIsland(EntityPlayer player) {
