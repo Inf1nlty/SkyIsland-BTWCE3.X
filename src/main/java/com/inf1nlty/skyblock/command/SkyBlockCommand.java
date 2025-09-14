@@ -425,6 +425,11 @@ public class SkyBlockCommand extends CommandBase {
         }
         pendingDeleteRequests.remove(player.username);
 
+        if (player.dimension != 0) {
+            MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension(player, 0);
+        }
+        player.setPositionAndUpdate(0.5, 101, 0.5);
+
         SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island != null) {
             for (String member : new HashSet<>(island.members)) {
