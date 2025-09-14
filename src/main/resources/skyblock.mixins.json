@@ -13,6 +13,8 @@
     "entity.EntityPlayerMPMixin",
     "entity.EntityZombieMixin",
     "entity.HardcoreSpawnUtilsMixin",
+    "world.BlockIceMixin",
+    "world.BucketItemLavaMixin",
     "world.EmeraldPileItemMixin",
     "world.ItemEnderEyeMixin",
     "world.MinecraftServerMixin",
