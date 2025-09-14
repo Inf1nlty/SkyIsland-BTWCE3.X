@@ -366,6 +366,24 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
 
+//        boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
+//        if (everCreated && checkShopMod()) {
+//            try {
+//                int balance = (int)getBalanceTenths.invoke(null, player);
+//                if (balance < 5000) {
+//                    player.sendChatToPlayer(createFormattedMessage("commands.island.new.not_enough_money",
+//                            EnumChatFormatting.RED, false, false, false, 500));
+//                    return;
+//                }
+//                addTenths.invoke(null, player, -5000);
+//                player.sendChatToPlayer(createFormattedMessage("commands.island.new.cost_paid",
+//                        EnumChatFormatting.YELLOW, false, false, false, 500));
+//            } catch (Exception e) {
+//                player.sendChatToPlayer(createMessage("commands.island.new.shopmod_error",
+//                        EnumChatFormatting.RED, false, false, false));
+//            }
+//        }
+
         pendingCreate.put(player.username, 60);
         player.sendChatToPlayer(createFormattedMessage("commands.island.create.wait",
                 EnumChatFormatting.YELLOW, false, false, false, player.username));
