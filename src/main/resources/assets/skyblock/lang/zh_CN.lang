@@ -3,6 +3,7 @@ commands.island.notfound=你还没有空岛。
 commands.island.tp_wait=将在3秒后传送到你的空岛...
 commands.island.tp_pending=传送请求已在等待中。
 commands.island.tp_success=你已传送到你的空岛。
+commands.island.new.only_in_voidworld=只能在虚空世界创建空岛！
 commands.island.already=你已经拥有一个空岛。
 commands.island.create.wait=正在为你生成空岛，请稍等...
 commands.island.new.only_in_overworld=只能在主世界创建空岛！

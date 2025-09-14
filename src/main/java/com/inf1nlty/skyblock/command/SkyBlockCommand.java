@@ -3,6 +3,7 @@ package com.inf1nlty.skyblock.command;
 import com.inf1nlty.skyblock.util.SkyBlockDataManager;
 import com.inf1nlty.skyblock.util.SkyBlockManager;
 import com.inf1nlty.skyblock.util.SkyBlockPoint;
+import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
@@ -351,6 +352,11 @@ public class SkyBlockCommand extends CommandBase {
     private static final int OVERWORLD_DIM_ID = 0;
 
     private void handleNew(EntityPlayerMP player) {
+        if (!SkyBlockWorldUtil.isVoidWorldLoaded()) {
+            player.sendChatToPlayer(createMessage("commands.island.new.only_in_voidworld",
+                    EnumChatFormatting.RED, false, false, false));
+            return;
+        }
         if (player.dimension != OVERWORLD_DIM_ID) {
             player.sendChatToPlayer(createMessage("commands.island.new.only_in_overworld",
                     EnumChatFormatting.RED, false, false, false));

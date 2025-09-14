@@ -3,6 +3,7 @@ commands.island.notfound=You don't have a Sky Island yet.
 commands.island.tp_wait=Teleporting to your Sky Island in 3 seconds...
 commands.island.tp_pending=Teleport already pending.
 commands.island.tp_success=Teleported to your Sky Island.
+commands.island.new.only_in_voidworld=You can only create empty islands in the void world!
 commands.island.already=You already have a Sky Island.
 commands.island.create.wait=Creating your Sky Island, please wait...
 commands.island.new.only_in_overworld=Islands can only be created in the overworld!
