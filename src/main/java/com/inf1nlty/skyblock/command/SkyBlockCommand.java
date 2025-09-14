@@ -572,8 +572,17 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
         if (pendingTPARequests.containsKey(target.username)) {
-            player.sendChatToPlayer(createFormattedMessage("commands.island.tpa.already_pending", EnumChatFormatting.YELLOW, false, false, false, target.username));
-            return;
+            String oldRequester = pendingTPARequests.get(target.username);
+            EntityPlayerMP oldRequesterPlayer = getOnlinePlayer(oldRequester);
+            if (oldRequesterPlayer == null)
+            {
+                pendingTPARequests.remove(target.username);
+                pendingTPATIMEOUTRequests.remove(target.username);
+            }
+            else {
+                player.sendChatToPlayer(createFormattedMessage("commands.island.tpa.already_pending", EnumChatFormatting.YELLOW, false, false, false, target.username));
+                return;
+            }
         }
         pendingTPARequests.put(target.username, player.username);
         pendingTPATIMEOUTRequests.put(target.username, new PendingTPARequest(player.username, System.currentTimeMillis()));

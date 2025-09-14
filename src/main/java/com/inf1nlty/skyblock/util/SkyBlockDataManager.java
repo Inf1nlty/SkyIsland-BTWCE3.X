@@ -72,11 +72,7 @@ public class SkyBlockDataManager {
                 if (player.username.equals(island.owner) || island.members.contains(player.username)) continue;
                 if (player.dimension != island.dim) continue;
                 if (island.isInProtectRegion(player)) {
-                    double kickRadius = 33.0;
-                    double angle = Math.atan2(player.posZ - island.initSpawnZ, player.posX - island.initSpawnX);
-                    double newX = island.initSpawnX + Math.cos(angle) * kickRadius;
-                    double newZ = island.initSpawnZ + Math.sin(angle) * kickRadius;
-                    player.setPositionAndUpdate(newX, player.posY, newZ);
+                    player.setPositionAndUpdate(0.5, 101.0, 0.5);
                     player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protection.kicked").setColor(EnumChatFormatting.RED));
                     break;
                 }
