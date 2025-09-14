@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Mixin(SpawnerAnimals.class)
-public class SpawnerAnimalsMixin {
+public abstract class SpawnerAnimalsMixin {
 
     @Unique
     private static int animalSpawnCooldown = 0;

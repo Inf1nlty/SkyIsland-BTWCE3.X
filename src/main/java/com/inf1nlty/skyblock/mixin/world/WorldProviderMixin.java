@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldProvider.class)
-public class WorldProviderMixin {
+public abstract class WorldProviderMixin {
 
     @Inject(method = "createChunkGenerator", at = @At("RETURN"), cancellable = true)
     private void onCreateChunkGenerator(CallbackInfoReturnable<IChunkProvider> cir) {

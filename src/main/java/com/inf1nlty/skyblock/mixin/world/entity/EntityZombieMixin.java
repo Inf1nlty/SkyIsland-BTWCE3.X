@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityZombie.class)
-public class EntityZombieMixin {
+public abstract class EntityZombieMixin {
 
     @Inject(method = "onSpawnWithEgg", at = @At("RETURN"))
     public void netherZombieToVillager(EntityLivingData data, CallbackInfoReturnable<EntityLivingData> cir) {

@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * matching vanilla SkyBlock mechanics.
  */
 @Mixin(BlockIce.class)
-public class BlockIceMixin {
+public abstract class BlockIceMixin {
 
     @Inject(method = "melt", at = @At("HEAD"), cancellable = true)
     private void skyblock$allowWaterSourceInVoidWorld(World world, int x, int y, int z, CallbackInfo ci) {

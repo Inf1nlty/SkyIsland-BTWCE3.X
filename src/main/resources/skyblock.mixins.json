@@ -9,7 +9,7 @@
     "accessor.SpawnerAnimalsAccessor",
     "world.MinecraftServerMixin",
     "world.NetherBridgeMapGenMixin",
-    "world.RegionFileCacheAccessor",
+    "accessor.RegionFileCacheAccessor",
     "world.ServerConfigurationManagerMixin",
     "world.SpawnerAnimalsMixin",
     "world.TeleporterMixin",

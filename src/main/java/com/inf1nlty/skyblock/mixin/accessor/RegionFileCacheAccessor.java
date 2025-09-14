@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin.world;
+package com.inf1nlty.skyblock.mixin.accessor;
 
 import net.minecraft.src.RegionFileCache;
 import org.spongepowered.asm.mixin.Mixin;

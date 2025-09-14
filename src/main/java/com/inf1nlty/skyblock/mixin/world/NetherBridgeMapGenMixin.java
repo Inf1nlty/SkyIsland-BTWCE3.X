@@ -12,7 +12,7 @@ import btw.world.structure.NetherBridgeMapGen;
 import java.util.List;
 
 @Mixin(NetherBridgeMapGen.class)
-public class NetherBridgeMapGenMixin {
+public abstract class NetherBridgeMapGenMixin {
 
     @SuppressWarnings("unchecked")
     @Inject(method = "<init>", at = @At("TAIL"))

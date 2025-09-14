@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Multiplayer NBT handled by EntityPlayerMPMixin.
  */
 @Mixin(EntityPlayer.class)
-public class EntityPlayerMixin {
+public abstract class EntityPlayerMixin {
     /**
      * Write island data to player NBT after vanilla write.
      * Only for singleplayer (not EntityPlayerMP).

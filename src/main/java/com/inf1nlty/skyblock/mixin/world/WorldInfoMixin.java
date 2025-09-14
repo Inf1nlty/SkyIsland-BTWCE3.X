@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(WorldInfo.class)
 public abstract class WorldInfoMixin {
+
     /**
      * Load global island allocation data when the world is loaded.
      */

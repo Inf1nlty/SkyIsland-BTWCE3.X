@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(World.class)
-public class WorldMixin {
+public abstract class WorldMixin {
+
     @Inject(method = "getHorizon", at = @At("HEAD"), cancellable = true)
     private void patchGetHorizon(CallbackInfoReturnable<Double> cir) {
         if (SkyBlockWorldUtil.isVoidWorldLoaded()) {

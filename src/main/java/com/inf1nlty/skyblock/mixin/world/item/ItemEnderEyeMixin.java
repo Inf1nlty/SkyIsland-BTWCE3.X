@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemEnderEye.class)
-public class ItemEnderEyeMixin {
+public abstract class ItemEnderEyeMixin {
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)
     private void onItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {

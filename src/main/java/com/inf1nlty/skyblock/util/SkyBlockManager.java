@@ -27,20 +27,27 @@ public class SkyBlockManager {
     public static final int MAX_RING = 100;
 
     private static class RegionId {
+
         public final int x, z;
         public RegionId(int x, int z) { this.x = x; this.z = z; }
+
         @Override public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof RegionId)) return false;
-            RegionId other = (RegionId)o;
+            if (!(o instanceof RegionId other)) return false;
             return x == other.x && z == other.z;
         }
-        @Override public int hashCode() { return 31 * x + z; }
+
+        @Override public int hashCode() {
+            return 31 * x + z;
+        }
+
         @Override public String toString() { return x + ":" + z; }
+
         public static RegionId fromString(String s) {
             String[] arr = s.split(":");
             return new RegionId(Integer.parseInt(arr[0]), Integer.parseInt(arr[1]));
         }
+
     }
 
     private static ArrayList<RegionId> getRegionIdsForRing(int ring) {

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EmeraldPileItem.class)
-public class EmeraldPileItemMixin {
+public abstract class EmeraldPileItemMixin {
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)
     private void onItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {
