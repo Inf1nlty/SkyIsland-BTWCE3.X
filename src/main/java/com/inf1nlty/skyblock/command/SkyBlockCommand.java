@@ -22,23 +22,23 @@ import java.util.*;
  */
 public class SkyBlockCommand extends CommandBase {
 
-//    private static Boolean hasShopMod = null;
-//    private static java.lang.reflect.Method getBalanceTenths = null;
-//    private static java.lang.reflect.Method addTenths = null;
-//
-//    private static boolean checkShopMod() {
-//        if (hasShopMod == null) {
-//            try {
-//                Class<?> moneyManagerClass = Class.forName("com.inf1nlty.shop.util.MoneyManager");
-//                getBalanceTenths = moneyManagerClass.getMethod("getBalanceTenths", EntityPlayer.class);
-//                addTenths = moneyManagerClass.getMethod("addTenths", EntityPlayer.class, int.class);
-//                hasShopMod = true;
-//            } catch (Exception e) {
-//                hasShopMod = false;
-//            }
-//        }
-//        return hasShopMod;
-//    }
+    private static Boolean hasShopMod = null;
+    private static java.lang.reflect.Method getBalanceTenths = null;
+    private static java.lang.reflect.Method addTenths = null;
+
+    private static boolean checkShopMod() {
+        if (hasShopMod == null) {
+            try {
+                Class<?> moneyManagerClass = Class.forName("com.inf1nlty.shop.util.MoneyManager");
+                getBalanceTenths = moneyManagerClass.getMethod("getBalanceTenths", EntityPlayer.class);
+                addTenths = moneyManagerClass.getMethod("addTenths", EntityPlayer.class, int.class);
+                hasShopMod = true;
+            } catch (Exception e) {
+                hasShopMod = false;
+            }
+        }
+        return hasShopMod;
+    }
 
     // State for delayed creation and deletion, and tpa requests
     private static final Map<String, Integer> pendingIslandTeleports = new HashMap<>();
@@ -373,23 +373,23 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
 
-//        boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
-//        if (everCreated && checkShopMod()) {
-//            try {
-//                int balance = (int)getBalanceTenths.invoke(null, player);
-//                if (balance < 5000) {
-//                    player.sendChatToPlayer(createFormattedMessage("commands.island.new.not_enough_money",
-//                            EnumChatFormatting.RED, false, false, false, 500));
-//                    return;
-//                }
-//                addTenths.invoke(null, player, -5000);
-//                player.sendChatToPlayer(createFormattedMessage("commands.island.new.cost_paid",
-//                        EnumChatFormatting.YELLOW, false, false, false, 500));
-//            } catch (Exception e) {
-//                player.sendChatToPlayer(createMessage("commands.island.new.shopmod_error",
-//                        EnumChatFormatting.RED, false, false, false));
-//            }
-//        }
+        boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
+        if (everCreated && checkShopMod()) {
+            try {
+                int balance = (int)getBalanceTenths.invoke(null, player);
+                if (balance < 5000) {
+                    player.sendChatToPlayer(createFormattedMessage("commands.island.new.not_enough_money",
+                            EnumChatFormatting.RED, false, false, false, 500));
+                    return;
+                }
+                addTenths.invoke(null, player, -5000);
+                player.sendChatToPlayer(createFormattedMessage("commands.island.new.cost_paid",
+                        EnumChatFormatting.YELLOW, false, false, false, 500));
+            } catch (Exception e) {
+                player.sendChatToPlayer(createMessage("commands.island.new.shopmod_error",
+                        EnumChatFormatting.RED, false, false, false));
+            }
+        }
 
         pendingCreate.put(player.username, 60);
         player.sendChatToPlayer(createFormattedMessage("commands.island.create.wait",
