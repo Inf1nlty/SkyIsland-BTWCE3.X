@@ -58,6 +58,7 @@ commands.island.kick.usage=Usage: /island kick <on|off>
 commands.island.kick.enabled=Island kick protection has been enabled.
 commands.island.kick.disabled=Island kick protection has been disabled.
 commands.island.protection.kicked=You entered someone else's island protection zone and were forcibly ejected!
+commands.protection.bedrock_room.deny=This is the spawn protection area. You cannot break here!
 commands.island.protection.deny=You don't have permission to interact in this island region.
 commands.island.join.request_sent=Join request sent to island owner %s, waiting for response.
 commands.island.join.request=Player %s is requesting to join your island. Type /island accept %s or /is a %s to accept, /island deny %s or /is d %s to deny.

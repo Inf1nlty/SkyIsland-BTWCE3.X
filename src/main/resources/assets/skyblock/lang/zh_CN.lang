@@ -58,6 +58,7 @@ commands.island.kick.usage=用法: /island kick <on|off>
 commands.island.kick.enabled=岛屿踢人保护已启用。
 commands.island.kick.disabled=岛屿踢人保护已关闭。
 commands.island.protection.kicked=你进入了他人的空岛保护区，被强制弹出！
+commands.protection.bedrock_room.deny=这里是出生点保护区，禁止破坏！
 commands.island.protection.deny=你没有权限在这个岛屿区域进行交互。
 commands.island.join.request_sent=已向岛主 %s 发起加入申请，等待对方处理。
 commands.island.join.request=玩家 %s 请求加入你的岛屿，输入 /island accept %s 或 /is a %s 同意，/island deny %s 或 /is d %s 拒绝。

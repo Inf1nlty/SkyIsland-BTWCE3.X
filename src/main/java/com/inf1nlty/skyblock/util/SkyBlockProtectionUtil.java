@@ -45,17 +45,40 @@ public class SkyBlockProtectionUtil {
         return null;
     }
 
+    public static boolean isInBedrockRoom(double x, double z, int dim) {
+        int centerX = 0, centerZ = 0, protection = 20, roomDim = 0;
+        return dim == roomDim && Math.abs(x - centerX) <= protection && Math.abs(z - centerZ) <= protection;
+    }
+
+    public static boolean protectBedrockRoom(EntityPlayer player, double x, double z, int dim) {
+        if (player == null || player.capabilities.isCreativeMode) return false;
+        return isInBedrockRoom(x, z, dim);
+    }
+
     public static boolean shouldDenyInteraction(EntityPlayer player, double x, double z, int dim) {
+        if (protectBedrockRoom(player, x, z, dim)) return true;
         return getProtectedIslandAt(player, x, z, dim) != null;
     }
 
     public static boolean denyInteractionIfProtected(EntityPlayer player, double x, double z, int dim) {
-        if (shouldDenyInteraction(player, x, z, dim)) {
+
+        if (protectBedrockRoom(player, x, z, dim)) {
+            sendBedrockRoomDenyMessage(player);
+            return true;
+        }
+
+        if (getProtectedIslandAt(player, x, z, dim) != null) {
             sendProtectDenyMessage(player);
             return true;
         }
 
         return false;
+    }
+
+    public static void sendBedrockRoomDenyMessage(EntityPlayer player) {
+        if (player != null) {
+            player.sendChatToPlayer(SkyBlockCommand.createMessage("commands.protection.bedrock_room.deny", EnumChatFormatting.RED, false, false, false));
+        }
     }
 
     public static void sendProtectDenyMessage(EntityPlayer player) {
