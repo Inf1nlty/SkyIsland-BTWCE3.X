@@ -4,24 +4,31 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Handles island data persistence and retrieval.
  */
 public class SkyBlockDataManager {
     private static final Map<String, SkyBlockPoint> playerIslands = new HashMap<>();
-    private static final Set<String> everCreatedIslanders = new HashSet<>();
+    private static final Map<String, Integer> islandCreateCount = new HashMap<>();
     private static final Map<String, String> globalMemberMap = new HashMap<>();
 
     public static SkyBlockPoint getIsland(EntityPlayerMP player) {
         return playerIslands.get(player.username);
     }
 
+    public static int getIslandCreateCount(String username) {
+        return islandCreateCount.getOrDefault(username, 0);
+    }
+
+    public static void incrementIslandCreateCount(String username) {
+        int cnt = getIslandCreateCount(username);
+        islandCreateCount.put(username, cnt + 1);
+    }
+
     public static boolean hasEverCreatedIsland(String username) {
-        return everCreatedIslanders.contains(username);
+        return getIslandCreateCount(username) > 0;
     }
 
     public static void setIsland(EntityPlayerMP player, SkyBlockPoint ip) {
@@ -29,7 +36,7 @@ public class SkyBlockDataManager {
             playerIslands.remove(player.username);
         } else {
             playerIslands.put(player.username, ip);
-            everCreatedIslanders.add(player.username);
+            // 岛屿创建计数自增请在业务逻辑中调用incrementIslandCreateCount
         }
         NBTTagCompound tag = new NBTTagCompound();
         writeIslandToNBT(player, tag);
@@ -42,7 +49,6 @@ public class SkyBlockDataManager {
             playerIslands.remove(username);
         } else {
             playerIslands.put(username, ip);
-            everCreatedIslanders.add(username);
         }
     }
 
@@ -133,13 +139,12 @@ public class SkyBlockDataManager {
     }
 
     public static void writeHistoryToNBT(EntityPlayerMP player, NBTTagCompound tag) {
-        tag.setBoolean("hasEverCreatedIsland", everCreatedIslanders.contains(player.username));
+        tag.setInteger("islandCreatedCount", getIslandCreateCount(player.username));
     }
 
     public static void readHistoryFromNBT(EntityPlayerMP player, NBTTagCompound tag) {
-        if (tag.hasKey("hasEverCreatedIsland") && tag.getBoolean("hasEverCreatedIsland")) {
-            everCreatedIslanders.add(player.username);
-        }
+        int count = tag.hasKey("islandCreatedCount") ? tag.getInteger("islandCreatedCount") : 0;
+        if (count > 0) islandCreateCount.put(player.username, count);
     }
 
     public static void setGlobalMember(String member, String owner) {
@@ -169,7 +174,7 @@ public class SkyBlockDataManager {
 
     public static void clearAll() {
         playerIslands.clear();
-        everCreatedIslanders.clear();
+        islandCreateCount.clear();
         globalMemberMap.clear();
     }
 

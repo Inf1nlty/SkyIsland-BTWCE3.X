@@ -389,8 +389,8 @@ public class SkyBlockCommand extends CommandBase {
             return;
         }
 
-        boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
-        if (everCreated && checkShopMod()) {
+        int createdCount = SkyBlockDataManager.getIslandCreateCount(player.username);
+        if (createdCount >= 2 && checkShopMod()) {
             try {
                 int balance = (int)getBalanceTenths.invoke(null, player);
                 if (balance < 5000) {
@@ -893,6 +893,7 @@ public class SkyBlockCommand extends CommandBase {
                     boolean everCreated = SkyBlockDataManager.hasEverCreatedIsland(player.username);
                     SkyBlockPoint island = SkyBlockManager.makeIsland(player, (WorldServer) world);
                     SkyBlockDataManager.setIsland(player, island);
+                    SkyBlockDataManager.incrementIslandCreateCount(player.username);
                     SkyBlockManager.generateIsland(world, island);
                     pendingIslandTeleports.put(player.username, 60);
                     player.sendChatToPlayer(createFormattedMessage("commands.island.create.success",
@@ -900,7 +901,11 @@ public class SkyBlockCommand extends CommandBase {
 
                     player.sendChatToPlayer(createFormattedMessage("commands.island.tp_wait",
                             EnumChatFormatting.YELLOW, false, false, false, player.username));
-                    if (everCreated) {
+
+                    int createdCount = SkyBlockDataManager.getIslandCreateCount(player.username);
+
+                    if (createdCount >= 3) {
+
                         String[] tauntKeys = {
                                 "commands.island.taunt.1", "commands.island.taunt.2", "commands.island.taunt.3",
                                 "commands.island.taunt.4", "commands.island.taunt.5", "commands.island.taunt.6",
@@ -909,6 +914,7 @@ public class SkyBlockCommand extends CommandBase {
                         };
                         String tauntKey = tauntKeys[(int) (Math.random() * tauntKeys.length)];
                         String tauntMsg = tauntKey;
+
                         for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
                             EntityPlayerMP target = (EntityPlayerMP) obj;
                             target.sendChatToPlayer(createFormattedMessage(tauntMsg,
@@ -916,11 +922,15 @@ public class SkyBlockCommand extends CommandBase {
                         }
                     }
                 }
+
                 itCreate.remove();
-            } else {
+            }
+            else {
                 entry.setValue(ticks);
             }
+
         }
+
         // Handle pending island creation
         Iterator<Map.Entry<String, Integer>> itIslandTP = pendingIslandTeleports.entrySet().iterator();
         while (itIslandTP.hasNext()) {
@@ -946,9 +956,11 @@ public class SkyBlockCommand extends CommandBase {
                     }
                 }
                 itIslandTP.remove();
-            } else {
+            }
+            else {
                 entry.setValue(ticks);
             }
+
         }
 
         // Handle island delete timeouts
@@ -1007,6 +1019,7 @@ public class SkyBlockCommand extends CommandBase {
                 itTP.remove();
             }
         }
+
         Iterator<Map.Entry<String, PendingTPARequest>> itTPA = pendingTPATIMEOUTRequests.entrySet().iterator();
         while (itTPA.hasNext()) {
             Map.Entry<String, PendingTPARequest> entry = itTPA.next();
@@ -1025,6 +1038,7 @@ public class SkyBlockCommand extends CommandBase {
                 itTPA.remove();
             }
         }
+
         Iterator<Map.Entry<String, PendingJoin>> itJoin = pendingJoins.entrySet().iterator();
         while (itJoin.hasNext()) {
             Map.Entry<String, PendingJoin> e = itJoin.next();
