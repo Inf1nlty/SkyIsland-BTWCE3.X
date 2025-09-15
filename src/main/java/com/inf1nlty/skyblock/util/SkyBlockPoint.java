@@ -12,7 +12,8 @@ public class SkyBlockPoint {
     public final String owner;
     public Set<String> members = new HashSet<>();
     public double spawnX, spawnY, spawnZ;
-    public boolean tpaEnabled = true;
+    public boolean tpaEnabled;
+    public boolean warpEnabled;
     public boolean protectEnabled;
     public boolean kickEnabled;
 
@@ -25,6 +26,8 @@ public class SkyBlockPoint {
         this.spawnX = x + SkyBlockManager.SPAWN_X_OFFSET;
         this.spawnY = y + SkyBlockManager.SPAWN_Y_OFFSET;
         this.spawnZ = z + SkyBlockManager.SPAWN_Z_OFFSET;
+        this.tpaEnabled = true;
+        this.warpEnabled = false;
         this.initSpawnX = this.spawnX;
         this.initSpawnY = this.spawnY;
         this.initSpawnZ = this.spawnZ;

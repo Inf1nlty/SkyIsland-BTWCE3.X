@@ -36,8 +36,8 @@ public class SkyBlockDataManager {
             playerIslands.remove(player.username);
         } else {
             playerIslands.put(player.username, ip);
-            // 岛屿创建计数自增请在业务逻辑中调用incrementIslandCreateCount
         }
+
         NBTTagCompound tag = new NBTTagCompound();
         writeIslandToNBT(player, tag);
         player.writeToNBT(tag);
@@ -88,6 +88,7 @@ public class SkyBlockDataManager {
         islandTag.setDouble("initSpawnY", ip.initSpawnY);
         islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
+        islandTag.setBoolean("warpEnabled", ip.warpEnabled);
         NBTTagList memberList = new NBTTagList();
         for (String member : ip.members) memberList.appendTag(new NBTTagString(member, member));
         islandTag.setTag("members", memberList);
@@ -123,6 +124,7 @@ public class SkyBlockDataManager {
         ip.initSpawnY = islandTag.getDouble("initSpawnY");
         ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
+        ip.warpEnabled = islandTag.getBoolean("warpEnabled");
         ip.protectEnabled = islandTag.getBoolean("protectEnabled");
         ip.kickEnabled = islandTag.getBoolean("kickEnabled");
         if (islandTag.hasKey("members")) {

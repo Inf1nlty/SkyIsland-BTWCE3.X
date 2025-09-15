@@ -247,6 +247,28 @@ public class SkyBlockCommand extends CommandBase {
             case "setno":
                 handleTPA(player, sub);
                 break;
+            case "warp":
+            case "w":
+                if (args.length >= 2) {
+
+                    if (args[1].equalsIgnoreCase("on")) {
+                        handleWarpToggle(player, true);
+
+                    } else if (args[1].equalsIgnoreCase("off")) {
+                        handleWarpToggle(player, false);
+
+                    } else {
+                        handleWarpTeleport(player, args[1]);
+                    }
+
+                } else {
+                    player.sendChatToPlayer(createMessage("commands.island.warp.usage",
+                            EnumChatFormatting.YELLOW, false, false, false));
+                }
+                break;
+            case "list":
+                handleWarpList(player);
+                break;
             case "protect":
             case "p":
                 if (args.length >= 2) {
@@ -345,6 +367,9 @@ public class SkyBlockCommand extends CommandBase {
 
             player.sendChatToPlayer(createFormattedMessage("commands.island.info.line2",
                     EnumChatFormatting.AQUA, false, false, false, island.spawnX, island.spawnY, island.spawnZ, island.tpaEnabled ? "yes" : "no"));
+
+            player.sendChatToPlayer(createFormattedMessage("commands.island.info.line3",
+                    EnumChatFormatting.YELLOW, false, false, false, island.warpEnabled ? "yes" : "no", island.protectEnabled ? "yes" : "no", island.kickEnabled ? "yes" : "no"));
 
             String memberList = String.join(", ", island.members);
 
@@ -666,6 +691,71 @@ public class SkyBlockCommand extends CommandBase {
             this.requester = requester;
             this.requestTimeMillis = requestTimeMillis;
         }
+    }
+
+    private void handleWarpToggle(EntityPlayerMP player, boolean enable) {
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+
+        if (island == null) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
+                    EnumChatFormatting.RED, false, false, false, player.username));
+            return;
+        }
+
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                    EnumChatFormatting.RED, false, false, false));
+            return;
+        }
+
+        island.warpEnabled = enable;
+        SkyBlockDataManager.setIsland(player, island);
+        player.sendChatToPlayer(createMessage(
+                enable ? "commands.island.warp.enabled" : "commands.island.warp.disabled",
+                EnumChatFormatting.GREEN, false, false, false));
+    }
+
+    private void handleWarpTeleport(EntityPlayerMP player, String ownerName) {
+        SkyBlockPoint target = SkyBlockDataManager.getIsland(ownerName);
+        if (target == null || !target.warpEnabled) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.warp.notfound",
+                    EnumChatFormatting.RED, false, false, false, ownerName));
+            return;
+        }
+
+        if (player.dimension != target.dim) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.warp.dim_mismatch",
+                    EnumChatFormatting.RED, false, false, false, ownerName));
+            return;
+        }
+
+        if (pendingTeleports.containsKey(player.username)) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.warp.tp_pending",
+                    EnumChatFormatting.YELLOW, false, false, false, ownerName));
+            return;
+        }
+
+        pendingTeleports.put(player.username, new PendingTeleport(player, target, 60));
+        player.sendChatToPlayer(createFormattedMessage("commands.island.warp.tp_wait",
+                EnumChatFormatting.YELLOW, false, false, false, ownerName));
+    }
+
+    private void handleWarpList(EntityPlayerMP player) {
+        Iterable<SkyBlockPoint> allIslands = SkyBlockDataManager.getAllIslands();
+        List<String> warpOwners = new ArrayList<>();
+        for (SkyBlockPoint island : allIslands) {
+            if (island.warpEnabled) {
+                warpOwners.add(island.owner);
+            }
+        }
+        if (warpOwners.isEmpty()) {
+            player.sendChatToPlayer(createMessage("commands.island.warp.list.empty",
+                    EnumChatFormatting.YELLOW, false, false, false));
+            return;
+        }
+        String list = String.join(", ", warpOwners);
+        player.sendChatToPlayer(createFormattedMessage("commands.island.warp.list",
+                EnumChatFormatting.AQUA, false, false, false, list));
     }
 
     private void handleProtectToggle(EntityPlayerMP player, boolean enable) {
