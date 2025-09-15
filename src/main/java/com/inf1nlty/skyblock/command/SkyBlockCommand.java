@@ -91,6 +91,18 @@ public class SkyBlockCommand extends CommandBase {
             return getPlayerNameCompletions(player, args[1]);
         }
 
+        // For /island warp <player>
+        if (args.length == 2 && (args[0].equalsIgnoreCase("warp") || args[0].equalsIgnoreCase("w"))) {
+            String prefix = args[1].toLowerCase();
+            List<String> owners = new ArrayList<>();
+            for (SkyBlockPoint island : SkyBlockDataManager.getAllIslands()) {
+                if (island.warpEnabled && island.owner.toLowerCase().startsWith(prefix)) {
+                    owners.add(island.owner);
+                }
+            }
+            return owners;
+        }
+
         if (args.length == 2 && (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("r"))) {
             SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
             if (island != null && !island.members.isEmpty()) {
