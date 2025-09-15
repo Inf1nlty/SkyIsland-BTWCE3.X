@@ -1,7 +1,7 @@
 package com.inf1nlty.skyblock.mixin.world;
 
 import com.inf1nlty.skyblock.command.SkyBlockCommand;
-import com.inf1nlty.skyblock.util.SkyBlockDataManager;
+import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
 import com.inf1nlty.skyblock.util.VoidWorldMobCleaner;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.WorldServer;
@@ -17,7 +17,7 @@ public abstract class MinecraftServerMixin {
 
         WorldServer world = MinecraftServer.getServer().worldServers[0];
         SkyBlockCommand.onServerTick(world);
-        SkyBlockDataManager.checkSkyBlockProtection(world);
+        SkyBlockProtectionUtil.checkSkyBlockProtection(world);
 
         VoidWorldMobCleaner.onServerTick(world);
     }

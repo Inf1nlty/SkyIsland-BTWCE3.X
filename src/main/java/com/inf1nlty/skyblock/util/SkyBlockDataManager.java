@@ -63,23 +63,6 @@ public class SkyBlockDataManager {
         return playerIslands.values();
     }
 
-    public static void checkSkyBlockProtection(World world) {
-        for (Object obj : world.playerEntities) {
-            EntityPlayerMP player = (EntityPlayerMP) obj;
-             if (player.capabilities.isCreativeMode) continue;
-            for (SkyBlockPoint island : SkyBlockDataManager.getAllIslands()) {
-                if (!island.protectEnabled) continue;
-                if (player.username.equals(island.owner) || island.members.contains(player.username)) continue;
-                if (player.dimension != island.dim) continue;
-                if (island.isInProtectRegion(player)) {
-                    player.setPositionAndUpdate(0.5, 101.0, 0.5);
-                    player.sendChatToPlayer(ChatMessageComponent.createFromText("commands.island.protection.kicked").setColor(EnumChatFormatting.RED));
-                    break;
-                }
-            }
-        }
-    }
-
     /**
      * Writes the player's island data to NBT.
      */

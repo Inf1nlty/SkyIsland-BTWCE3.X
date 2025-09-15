@@ -2,13 +2,13 @@ package com.inf1nlty.skyblock.mixin.world.entity;
 
 import com.inf1nlty.skyblock.util.SkyBlockManager;
 import com.inf1nlty.skyblock.util.SkyBlockPoint;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.NBTTagCompound;
+import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
+import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Mixin for persisting island data in EntityPlayer NBT.
@@ -44,4 +44,29 @@ public abstract class EntityPlayerMixin {
             SkyBlockManager.setIsland(player, ip);
         }
     }
+
+    @Inject(method = "attackTargetEntityWithCurrentItem", at = @At("HEAD"), cancellable = true)
+    private void blockAttackTargetEntityWithCurrentItem(Entity target, CallbackInfo ci) {
+        EntityPlayer player = (EntityPlayer) (Object) this;
+        World world = player.worldObj;
+        if (SkyBlockProtectionUtil.shouldDenyInteraction(player, target.posX, target.posZ, world.provider.dimensionId)) {
+            SkyBlockProtectionUtil.sendProtectDenyMessage(player);
+            ci.cancel();
+        }
+    }
+
+    /**
+     * Intercept right-click entity and deny if not allowed in SkyBlock region.
+     */
+    @Inject(method = "interactWith", at = @At("HEAD"), cancellable = true)
+    private void interactWith(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        EntityPlayer player = (EntityPlayer) (Object) this;
+        World world = player.worldObj;
+        if (SkyBlockProtectionUtil.shouldDenyInteraction(player, entity.posX, entity.posZ, world.provider.dimensionId)) {
+            SkyBlockProtectionUtil.sendProtectDenyMessage(player);
+            cir.setReturnValue(false);
+            cir.cancel();
+        }
+    }
+
 }

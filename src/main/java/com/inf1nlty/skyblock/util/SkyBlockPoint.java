@@ -32,9 +32,5 @@ public class SkyBlockPoint {
         this.protectEnabled = false;
     }
 
-    public boolean isInProtectRegion(EntityPlayer player) {
-        double dx = Math.abs(player.posX - this.initSpawnX);
-        double dz = Math.abs(player.posZ - this.initSpawnZ);
-        return dx <= 100.0 && dz <= 100.0;
-    }
+
 }
