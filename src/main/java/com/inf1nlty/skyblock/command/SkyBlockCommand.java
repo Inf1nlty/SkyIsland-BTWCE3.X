@@ -263,6 +263,22 @@ public class SkyBlockCommand extends CommandBase {
                             EnumChatFormatting.YELLOW, false, false, false));
                 }
                 break;
+            case "kick":
+            case "k":
+                if (args.length >= 2) {
+                    if (args[1].equalsIgnoreCase("on")) {
+                        handleKickToggle(player, true);
+                    } else if (args[1].equalsIgnoreCase("off")) {
+                        handleKickToggle(player, false);
+                    } else {
+                        player.sendChatToPlayer(createMessage("commands.island.kick.usage",
+                                EnumChatFormatting.YELLOW, false, false, false));
+                    }
+                } else {
+                    player.sendChatToPlayer(createMessage("commands.island.kick.usage",
+                            EnumChatFormatting.YELLOW, false, false, false));
+                }
+                break;
             case "join":
             case "j":
                 if (args.length >= 2) {
@@ -668,6 +684,25 @@ public class SkyBlockCommand extends CommandBase {
         SkyBlockDataManager.setIsland(player, island);
         player.sendChatToPlayer(createMessage(
                 enable ? "commands.island.protect.enabled" : "commands.island.protect.disabled",
+                EnumChatFormatting.GREEN, false, false, false));
+    }
+
+    private void handleKickToggle(EntityPlayerMP player, boolean enable) {
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island == null) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
+                    EnumChatFormatting.RED, false, false, false, player.username));
+            return;
+        }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                    EnumChatFormatting.RED, false, false, false));
+            return;
+        }
+        island.kickEnabled = enable;
+        SkyBlockDataManager.setIsland(player, island);
+        player.sendChatToPlayer(createMessage(
+                enable ? "commands.island.kick.enabled" : "commands.island.kick.disabled",
                 EnumChatFormatting.GREEN, false, false, false));
     }
 

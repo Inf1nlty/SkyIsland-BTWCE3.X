@@ -31,6 +31,7 @@ public class SkyBlockProtectionUtil {
 
         for (SkyBlockPoint island : SkyBlockDataManager.getAllIslands()) {
 
+            if (!island.protectEnabled) continue;
             if (island.dim != dim) continue;
 
             double dx = Math.abs(x - island.x);
@@ -72,7 +73,7 @@ public class SkyBlockProtectionUtil {
 
             for (SkyBlockPoint island : SkyBlockDataManager.getAllIslands()) {
 
-                if (!island.protectEnabled) continue;
+                if (!island.kickEnabled) continue;
 
                 if (player.username.equals(island.owner) || island.members.contains(player.username)) continue;
 

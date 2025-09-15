@@ -1,7 +1,5 @@
 package com.inf1nlty.skyblock.util;
 
-import net.minecraft.src.EntityPlayer;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +14,7 @@ public class SkyBlockPoint {
     public double spawnX, spawnY, spawnZ;
     public boolean tpaEnabled = true;
     public boolean protectEnabled;
+    public boolean kickEnabled;
 
     public SkyBlockPoint(String owner, int x, int y, int z, int dim) {
         this.owner = owner;
@@ -29,8 +28,8 @@ public class SkyBlockPoint {
         this.initSpawnX = this.spawnX;
         this.initSpawnY = this.spawnY;
         this.initSpawnZ = this.spawnZ;
-        this.protectEnabled = false;
+        this.protectEnabled = true;
+        this.kickEnabled = false;
     }
-
 
 }
