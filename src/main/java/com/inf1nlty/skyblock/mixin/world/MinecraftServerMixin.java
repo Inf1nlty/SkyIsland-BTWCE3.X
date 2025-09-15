@@ -26,7 +26,7 @@ public abstract class MinecraftServerMixin {
     }
 
     @Inject(method = "isBlockProtected", at = @At("HEAD"), cancellable = true)
-    private static void injectBlockProtected(World world, int x, int y, int z, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
+    private void injectBlockProtected(World world, int x, int y, int z, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
 
         if (player.capabilities.isCreativeMode) {
             cir.setReturnValue(false);
