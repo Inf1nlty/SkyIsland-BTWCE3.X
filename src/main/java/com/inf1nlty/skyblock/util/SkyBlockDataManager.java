@@ -134,7 +134,9 @@ public class SkyBlockDataManager {
             }
         }
         setIsland(player, ip);
-        String newKey = ip.dim + ":" + ip.x + ":" + ip.z;
+        int rx = ip.x / 512;
+        int rz = ip.z / 512;
+        String newKey = ip.dim + ":" + rx + ":" + rz;
         if (!SkyBlockManager.isUsedIslandPosition(newKey)) {
             SkyBlockManager.addUsedIslandPosition(newKey);
         }

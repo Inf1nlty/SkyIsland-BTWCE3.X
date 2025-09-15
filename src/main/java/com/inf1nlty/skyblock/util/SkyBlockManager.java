@@ -88,7 +88,8 @@ public class SkyBlockManager {
             if (!candidates.isEmpty()) {
                 Collections.shuffle(candidates);
                 RegionId chosen = candidates.get(0);
-                usedIslandPositions.add(chosen.toString());
+                String key = world.provider.dimensionId + ":" + chosen.x + ":" + chosen.z;
+                usedIslandPositions.add(key);
                 islandPositionsDirty = true;
                 writeGlobalIslandData(world.getWorldInfo().getNBTTagCompound());
                 int x = chosen.x * 512;
@@ -104,7 +105,8 @@ public class SkyBlockManager {
     public static void freeIslandRegions(SkyBlockPoint island) {
         int rx = island.x / 512;
         int rz = island.z / 512;
-        usedIslandPositions.remove((rx)   + ":" + (rz));
+        int dim = island.dim;
+        usedIslandPositions.remove(dim + ":" + rx + ":" + rz);
         islandPositionsDirty = true;
     }
 
@@ -186,7 +188,6 @@ public class SkyBlockManager {
         int i = 0;
         for (String pos : usedIslandPositions) {
             globalTag.setString("pos_" + i, pos);
-            i++;
         }
         worldTag.setTag("SkyIslandGlobal", globalTag);
     }
@@ -198,9 +199,6 @@ public class SkyBlockManager {
         int count = globalTag.getInteger("count");
         for (int i = 0; i < count; i++) {
             String pos = globalTag.getString("pos_" + i);
-            if (pos.indexOf(':') == pos.lastIndexOf(':')) {
-                pos = "0:" + pos;
-            }
             usedIslandPositions.add(pos);
         }
     }
