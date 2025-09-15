@@ -69,4 +69,18 @@ public abstract class EntityPlayerMixin {
         }
     }
 
+    /**
+     * Prevents detonation of carried Blasting Oil by players in protected SkyBlock regions.
+     * Cancels explosion caused by Blasting Oil if the player is in a protected area.
+     */
+    @Inject(method = "detonateCarriedBlastingOil", at = @At("HEAD"), cancellable = true)
+    private void blockBlastingOilDetonation(CallbackInfo ci) {
+        EntityPlayer self = (EntityPlayer)(Object)this;
+        World world = self.worldObj;
+        // Only block if in protected region
+        if (!world.isRemote && SkyBlockProtectionUtil.denyInteractionIfProtected(self, self.posX, self.posZ, world.provider.dimensionId)) {
+            ci.cancel();
+        }
+    }
+
 }

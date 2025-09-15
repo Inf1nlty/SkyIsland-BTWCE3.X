@@ -1,4 +1,4 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.world.item;
 
 import btw.item.items.PlaceAsBlockItem;
 import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
@@ -16,8 +16,8 @@ public abstract class PlaceAsBlockItemMixin {
      */
     @Inject(method = "onItemUse", at = @At("HEAD"), cancellable = true)
     private void blockOnItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, CallbackInfoReturnable<Boolean> cir) {
-        if (SkyBlockProtectionUtil.shouldDenyInteraction(player, x, z, world.provider.dimensionId)) {
-            SkyBlockProtectionUtil.sendProtectDenyMessage(player);
+
+        if (SkyBlockProtectionUtil.denyInteractionIfProtected(player, x, z, world.provider.dimensionId)) {
             cir.setReturnValue(false);
             cir.cancel();
         }

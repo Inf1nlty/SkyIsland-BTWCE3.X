@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EmeraldPileItemMixin {
 
     @Inject(method = "onItemRightClick", at = @At("HEAD"), cancellable = true)
-    private void onItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {
+    private void blockOnItemRightClick(ItemStack stack, World world, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {
         if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
             if (!world.isRemote && player instanceof EntityPlayerMP) {
                 ChatMessageComponent msg = SkyBlockCommand.createMessage(
@@ -24,4 +24,5 @@ public abstract class EmeraldPileItemMixin {
             cir.setReturnValue(stack);
         }
     }
+
 }

@@ -4,9 +4,6 @@
   "package": "com.inf1nlty.skyblock.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BlockMixin",
-    "PlaceAsBlockItemMixin",
-    "PlayerControllerMPMixin",
     "accessor.BiomeGenBaseAccessor",
     "accessor.EntityAccessor",
     "accessor.RegionFileCacheAccessor",
@@ -21,15 +18,24 @@
     "world.WorldProviderMixin",
     "world.WorldServerMixin",
     "world.block.BlockIceMixin",
+    "world.block.BlockMixin",
+    "world.block.ItemInWorldManagerMixin",
     "world.entity.EntityAnimalMixin",
+    "world.entity.EntityItemMixin",
     "world.entity.EntityMixin",
     "world.entity.EntityPlayerMixin",
     "world.entity.EntityPlayerMPMixin",
     "world.entity.EntityZombieMixin",
     "world.entity.HardcoreSpawnUtilsMixin",
+    "world.item.BucketItemFullMixin",
     "world.item.BucketItemLavaMixin",
+    "world.item.DynamiteItemMixin",
     "world.item.EmeraldPileItemMixin",
-    "world.item.ItemEnderEyeMixin"
+    "world.item.ItemEnderEyeMixin",
+    "world.item.ItemMixin",
+    "world.item.ItemPotionMixin",
+    "world.item.PlaceAsBlockItemMixin",
+    "world.item.ThrowableItemMixin"
   ],
   "client": [
     "client.GuiCreateWorldMixin"

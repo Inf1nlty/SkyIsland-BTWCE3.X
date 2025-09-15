@@ -1,5 +1,6 @@
-package com.inf1nlty.skyblock.mixin;
+package com.inf1nlty.skyblock.mixin.world.block;
 
+import btw.block.BTWBlocks;
 import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,8 +16,15 @@ public abstract class BlockMixin {
      */
     @Inject(method = "onBlockActivated", at = @At("HEAD"), cancellable = true)
     private void onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ, CallbackInfoReturnable<Boolean> cir) {
-        if (SkyBlockProtectionUtil.shouldDenyInteraction(player, x, z, world.provider.dimensionId)) {
-            SkyBlockProtectionUtil.sendProtectDenyMessage(player);
+
+        int blockId = world.getBlockId(x, y, z);
+
+        // Exclude Crafting Table and WorkStumpBlock from protection
+        if (blockId == BTWBlocks.workbench.blockID || blockId == BTWBlocks.workStump.blockID) {
+            return;
+        }
+
+        if (SkyBlockProtectionUtil.denyInteractionIfProtected(player, x, z, world.provider.dimensionId)) {
             cir.setReturnValue(true);
             cir.cancel();
         }

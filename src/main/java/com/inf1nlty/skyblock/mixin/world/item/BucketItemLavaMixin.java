@@ -2,6 +2,7 @@ package com.inf1nlty.skyblock.mixin.world.item;
 
 import btw.item.items.BucketItemLava;
 import btw.util.MiscUtils;
+import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +33,10 @@ public abstract class BucketItemLavaMixin extends Item {
             else if (side == 4) x--;
             else if (side == 5) x++;
 
-            if (!player.canPlayerEdit(x, y, z, side, stack)) return stack;
+            if (!player.canPlayerEdit(x, y, z, side, stack)
+                    || SkyBlockProtectionUtil.denyInteractionIfProtected(player, x, z, world.provider.dimensionId)) {
+                return stack;
+            }
 
             if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
                 if (world.isAirBlock(x, y, z) || world.getBlockMaterial(x, y, z).isReplaceable()) {
@@ -46,6 +50,8 @@ public abstract class BucketItemLavaMixin extends Item {
                 }
             }
         }
+
         return stack;
     }
+
 }
