@@ -81,7 +81,8 @@ public class SkyBlockManager {
             ArrayList<RegionId> regions = getRegionIdsForRing(ring);
             ArrayList<RegionId> candidates = new ArrayList<>();
             for (RegionId region : regions) {
-                if (!usedIslandPositions.contains(region.toString())) {
+                String key = world.provider.dimensionId + ":" + region.x + ":" + region.z;
+                if (!usedIslandPositions.contains(key)) {
                     candidates.add(region);
                 }
             }
