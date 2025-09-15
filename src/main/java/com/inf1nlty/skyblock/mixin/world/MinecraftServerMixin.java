@@ -33,9 +33,10 @@ public abstract class MinecraftServerMixin {
             return;
         }
 
-        MinecraftServer server = ((WorldServer) world).getMinecraftServer();
-        int protection = server.getSpawnProtectionSize();
-        if (protection > 0 && Math.abs(x) <= protection && Math.abs(z) <= protection) {
+        int centerX = 0, centerZ = 0;
+        int protection = 20; // [-20,20]
+
+        if (Math.abs(x - centerX) <= protection && Math.abs(z - centerZ) <= protection) {
             cir.setReturnValue(true);
         }
     }
