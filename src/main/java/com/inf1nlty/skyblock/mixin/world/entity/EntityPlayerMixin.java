@@ -62,8 +62,7 @@ public abstract class EntityPlayerMixin {
     private void interactWith(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         EntityPlayer player = (EntityPlayer) (Object) this;
         World world = player.worldObj;
-        if (SkyBlockProtectionUtil.shouldDenyInteraction(player, entity.posX, entity.posZ, world.provider.dimensionId)) {
-            SkyBlockProtectionUtil.sendProtectDenyMessage(player);
+        if (SkyBlockProtectionUtil.denyInteractionIfProtected(player, entity.posX, entity.posZ, world.provider.dimensionId)) {
             cir.setReturnValue(false);
             cir.cancel();
         }
