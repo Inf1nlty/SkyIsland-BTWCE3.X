@@ -26,5 +26,10 @@ run/
 # macos
 *.DS_Store
 
+# custom
 build_BTW/
 custom_mappings/
+
+# test files
+*.class
+NetherAirSoulPossessionTest.java
