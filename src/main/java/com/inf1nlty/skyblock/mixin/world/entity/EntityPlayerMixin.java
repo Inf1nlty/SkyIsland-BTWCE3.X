@@ -82,4 +82,34 @@ public abstract class EntityPlayerMixin {
         }
     }
 
+    /**
+     * Nether Air Soul Possession Simulation - triggers randomly in the Nether
+     * to simulate soul possession effects for SoulMending mechanics.
+     * Probability: 1/1000 per tick when player is in Nether (dimensionId == -1)
+     */
+    @Inject(method = "onLivingUpdate", at = @At("HEAD"))
+    private void netherAirSoulPossession(CallbackInfo ci) {
+        EntityPlayer self = (EntityPlayer)(Object)this;
+        World world = self.worldObj;
+        
+        // Only process on server side and in Nether dimension
+        if (!world.isRemote && world.provider.dimensionId == -1) {
+            // 1/1000 probability per tick
+            if (self.rand.nextInt(1000) == 0) {
+                // Use reflection to call the SoulMending method to maintain compatibility
+                try {
+                    // Try to find and invoke the soulMending$onSoulPossession method
+                    java.lang.reflect.Method method = self.getClass().getMethod("soulMending$onSoulPossession");
+                    method.invoke(self);
+                } catch (NoSuchMethodException e) {
+                    // Method not found - this is expected if SoulMending isn't available
+                    // Silently continue without error
+                } catch (Exception e) {
+                    // Other reflection errors - log but don't crash
+                    System.err.println("Warning: Failed to invoke soulMending$onSoulPossession: " + e.getMessage());
+                }
+            }
+        }
+    }
+
 }
