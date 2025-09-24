@@ -10,3 +10,4 @@ accessible field net/minecraft/src/GuiCreateWorld moreOptions Z
 accessible method net/minecraft/src/ServerConfigurationManager writePlayerData (Lnet/minecraft/src/EntityPlayerMP;)V
 accessible field net/minecraft/src/ItemBucket isFull I
 accessible method net/minecraft/src/Item getMovingObjectPositionFromPlayer (Lnet/minecraft/src/World;Lnet/minecraft/src/EntityPlayer;Z)Lnet/minecraft/src/MovingObjectPosition;
+accessible field net/minecraft/src/BiomeGenBase spawnableCaveCreatureList Ljava/util/List;
