@@ -12,7 +12,7 @@ public abstract class WorldMixin {
 
     @Inject(method = "getHorizon", at = @At("HEAD"), cancellable = true)
     private void patchGetHorizon(CallbackInfoReturnable<Double> cir) {
-        if (SkyBlockWorldUtil.isVoidWorldLoaded()) {
+        if (SkyBlockWorldUtil.isVoidWorldLoaded() || SkyBlockWorldUtil.isVoidWorldClientSynced()) {
             cir.setReturnValue(0.0D);
         }
     }

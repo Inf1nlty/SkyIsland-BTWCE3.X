@@ -1,5 +1,6 @@
 package com.inf1nlty.skyblock.util;
 
+import com.inf1nlty.skyblock.network.VoidWorldSyncNet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.World;
 
@@ -18,4 +19,7 @@ public class SkyBlockWorldUtil {
         return "voidworld".equals(srv.worldServers[0].getWorldInfo().getGeneratorOptions());
     }
 
+    public static boolean isVoidWorldClientSynced() {
+        return "voidworld".equals(VoidWorldSyncNet.clientGeneratorOptions);
+    }
 }
