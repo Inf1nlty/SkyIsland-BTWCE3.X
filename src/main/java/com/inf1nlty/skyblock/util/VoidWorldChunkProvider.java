@@ -111,10 +111,30 @@ public class VoidWorldChunkProvider extends ChunkProviderGenerate {
             replaceBlocksForBiome(chunkX, chunkZ, blockIDs, metadata, this.biomesForGeneration);
 
             Chunk chunk = new Chunk(this.worldObj, chunkX, chunkZ);
+
             byte[] biomeArr = chunk.getBiomeArray();
+
             for (int i = 0; i < biomeArr.length; ++i) {
-                biomeArr[i] = (byte) this.biomesForGeneration[i].biomeID;
+                int id = this.biomesForGeneration[i].biomeID;
+                // Ice Plains, Ice Mountains, Extreme Hills, Extreme Hills Edge → Jungle
+                if (id == BiomeGenBase.icePlains.biomeID
+                        || id == BiomeGenBase.iceMountains.biomeID
+                        || id == BiomeGenBase.extremeHills.biomeID
+                        || id == BiomeGenBase.extremeHillsEdge.biomeID) {
+                    biomeArr[i] = (byte) BiomeGenBase.jungle.biomeID;
+                }
+                // Ocean, River, Frozen River, Frozen Ocean → Swampland
+                else if (id == BiomeGenBase.ocean.biomeID
+                        || id == BiomeGenBase.river.biomeID
+                        || id == BiomeGenBase.frozenRiver.biomeID
+                        || id == BiomeGenBase.frozenOcean.biomeID) {
+                    biomeArr[i] = (byte) BiomeGenBase.swampland.biomeID;
+                }
+                else {
+                    biomeArr[i] = (byte) id;
+                }
             }
+
             chunk.generateSkylightMap();
 
             // Generate bedrock room
