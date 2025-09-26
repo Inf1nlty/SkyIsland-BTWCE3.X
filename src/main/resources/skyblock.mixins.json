@@ -28,6 +28,7 @@
     "world.entity.EntityMixin",
     "world.entity.EntityPlayerMixin",
     "world.entity.EntityPlayerMPMixin",
+    "world.entity.EntityXPOrbMixin",
     "world.entity.EntityZombieMixin",
     "world.entity.HardcoreSpawnUtilsMixin",
     "world.item.BucketItemFullMixin",
