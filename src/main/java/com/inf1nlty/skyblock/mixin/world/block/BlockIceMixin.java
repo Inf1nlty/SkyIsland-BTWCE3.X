@@ -1,9 +1,7 @@
 package com.inf1nlty.skyblock.mixin.world.block;
 
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
-import net.minecraft.src.BlockIce;
-import net.minecraft.src.Block;
-import net.minecraft.src.World;
+import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,6 +31,23 @@ public abstract class BlockIceMixin {
             world.setBlockWithNotify(x, y, z, Block.waterStill.blockID);
             Block.waterStill.onNeighborBlockChange(world, x, y, z, 0);
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "harvestBlock", at = @At("HEAD"), cancellable = true)
+    private void skyblock$voidWorldIceBreak(World world, EntityPlayer player, int x, int y, int z, int meta, CallbackInfo ci) {
+
+        if (SkyBlockWorldUtil.isVoidWorldLoaded() && !world.provider.isHellWorld) {
+
+            boolean silk = EnchantmentHelper.getSilkTouchModifier(player);
+
+            if (!silk) {
+                world.setBlockWithNotify(x, y, z, Block.waterStill.blockID);
+                Block.waterStill.onNeighborBlockChange(world, x, y, z, 0);
+                player.addStat(StatList.mineBlockStatArray[Block.ice.blockID], 1);
+                player.addExhaustion(0.025F);
+                ci.cancel();
+            }
         }
     }
 

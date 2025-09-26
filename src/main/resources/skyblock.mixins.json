@@ -1,4 +1,4 @@
-{
+ {
   "required": true,
   "minVersion": "0.8",
   "package": "com.inf1nlty.skyblock.mixin",
@@ -22,6 +22,7 @@
     "world.block.BlockMixin",
     "world.block.ItemInWorldManagerMixin",
     "world.entity.EntityAnimalMixin",
+    "world.entity.EntityFishHookMixin",
     "world.entity.EntityItemMixin",
     "world.entity.EntityMixin",
     "world.entity.EntityPlayerMixin",

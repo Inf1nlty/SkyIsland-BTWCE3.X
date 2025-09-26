@@ -31,8 +31,10 @@ public abstract class ServerConfigurationManagerMixin {
             } else {
                 newPlayer.setLocationAndAngles(0.5, 101.0, 0.5, 0.0F, 0.0F);
             }
-            newPlayer.setHealth(10.0F);
-            newPlayer.foodStats.setFoodLevel(30);
+            if (!playerLeavingTheEnd) {
+                newPlayer.setHealth(10.0F);
+                newPlayer.foodStats.setFoodLevel(30);
+            }
             newPlayer.playerNetServerHandler.setPlayerLocation(newPlayer.posX, newPlayer.posY, newPlayer.posZ, newPlayer.rotationYaw, newPlayer.rotationPitch);
         }
     }
