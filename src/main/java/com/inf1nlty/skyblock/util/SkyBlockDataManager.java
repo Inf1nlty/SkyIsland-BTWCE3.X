@@ -87,6 +87,9 @@ public class SkyBlockDataManager {
         islandTag.setDouble("initSpawnX", ip.initSpawnX);
         islandTag.setDouble("initSpawnY", ip.initSpawnY);
         islandTag.setDouble("initSpawnZ", ip.initSpawnZ);
+        islandTag.setDouble("warpX", ip.warpX);
+        islandTag.setDouble("warpY", ip.warpY);
+        islandTag.setDouble("warpZ", ip.warpZ);
         islandTag.setBoolean("tpaEnabled", ip.tpaEnabled);
         islandTag.setBoolean("warpEnabled", ip.warpEnabled);
         NBTTagList memberList = new NBTTagList();
@@ -123,6 +126,9 @@ public class SkyBlockDataManager {
         ip.initSpawnX = islandTag.getDouble("initSpawnX");
         ip.initSpawnY = islandTag.getDouble("initSpawnY");
         ip.initSpawnZ = islandTag.getDouble("initSpawnZ");
+        ip.warpX = islandTag.getDouble("warpX");
+        ip.warpY = islandTag.getDouble("warpY");
+        ip.warpZ = islandTag.getDouble("warpZ");
         ip.tpaEnabled = islandTag.getBoolean("tpaEnabled");
         ip.warpEnabled = islandTag.getBoolean("warpEnabled");
         ip.protectEnabled = islandTag.getBoolean("protectEnabled");

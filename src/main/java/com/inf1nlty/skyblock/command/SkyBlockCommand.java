@@ -1,9 +1,6 @@
 package com.inf1nlty.skyblock.command;
 
-import com.inf1nlty.skyblock.util.SkyBlockDataManager;
-import com.inf1nlty.skyblock.util.SkyBlockManager;
-import com.inf1nlty.skyblock.util.SkyBlockPoint;
-import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
+import com.inf1nlty.skyblock.util.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
@@ -69,7 +66,7 @@ public class SkyBlockCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/island info|i|new|n|delete|d[confirm]|setspawn|s|tpa|tp <player>|yes|no|setyes|setno";
+        return "/island info|i|new|n|delete|d[confirm]|setspawn|ss|setwarp|s|tpa|tp <player>|yes|no|setyes|setno";
     }
 
     @Override
@@ -174,6 +171,7 @@ public class SkyBlockCommand extends CommandBase {
         if ("new".startsWith(sub)) names.add("new");
         if ("delete".startsWith(sub)) names.add("delete");
         if ("setspawn".startsWith(sub)) names.add("setspawn");
+        if ("setwarp".startsWith(sub)) names.add("setwarp");
         if ("tpa".startsWith(sub)) names.add("tpa");
         if ("yes".startsWith(sub)) names.add("yes");
         if ("no".startsWith(sub)) names.add("no");
@@ -241,7 +239,7 @@ public class SkyBlockCommand extends CommandBase {
                 }
                 break;
             case "setspawn":
-            case "s":
+            case "ss":
                 handleSetSpawn(player);
                 break;
             case "tpa":
@@ -277,6 +275,10 @@ public class SkyBlockCommand extends CommandBase {
                     player.sendChatToPlayer(createMessage("commands.island.warp.usage",
                             EnumChatFormatting.YELLOW, false, false, false));
                 }
+                break;
+            case "setwarp":
+            case "s":
+                handleSetWarp(player);
                 break;
             case "list":
                 handleWarpList(player);
@@ -378,10 +380,10 @@ public class SkyBlockCommand extends CommandBase {
                     EnumChatFormatting.AQUA, false, false, false, island.owner, island.x, island.y, island.z, island.dim));
 
             player.sendChatToPlayer(createFormattedMessage("commands.island.info.line2",
-                    EnumChatFormatting.AQUA, false, false, false, island.spawnX, island.spawnY, island.spawnZ, island.tpaEnabled ? "yes" : "no"));
+                    EnumChatFormatting.AQUA, false, false, false, island.warpX, island.warpY, island.warpZ, island.warpEnabled ? "yes" : "no"));
 
             player.sendChatToPlayer(createFormattedMessage("commands.island.info.line3",
-                    EnumChatFormatting.YELLOW, false, false, false, island.warpEnabled ? "yes" : "no", island.protectEnabled ? "yes" : "no", island.kickEnabled ? "yes" : "no"));
+                    EnumChatFormatting.YELLOW, false, false, false, island.spawnX, island.spawnY, island.spawnZ, island.tpaEnabled ? "yes" : "no"));
 
             String memberList = String.join(", ", island.members);
 
@@ -523,8 +525,6 @@ public class SkyBlockCommand extends CommandBase {
     /**
      * Updates the spawn location for the player's island.
      */
-    private static final int SPAWN_LIMIT_DISTANCE = 30;
-
     private void handleSetSpawn(EntityPlayerMP player) {
         SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
         if (island == null) {
@@ -542,11 +542,9 @@ public class SkyBlockCommand extends CommandBase {
                     EnumChatFormatting.RED, false, false, false, player.username));
             return;
         }
-        double dx = Math.abs(player.posX - island.initSpawnX);
-        double dz = Math.abs(player.posZ - island.initSpawnZ);
-        if (dx > SPAWN_LIMIT_DISTANCE || dz > SPAWN_LIMIT_DISTANCE) {
+        if (!SkyBlockProtectionUtil.isInRegion(player, island)) {
             player.sendChatToPlayer(createFormattedMessage("commands.island.setspawn.out_of_bounds",
-                    EnumChatFormatting.RED, false, false, false, SPAWN_LIMIT_DISTANCE));
+                    EnumChatFormatting.RED, false, false, false, 1024));
             return;
         }
         SkyBlockManager.setSpawn(island, player.posX, player.posY, player.posZ);
@@ -725,6 +723,36 @@ public class SkyBlockCommand extends CommandBase {
         player.sendChatToPlayer(createMessage(
                 enable ? "commands.island.warp.enabled" : "commands.island.warp.disabled",
                 EnumChatFormatting.GREEN, false, false, false));
+    }
+
+    private void handleSetWarp(EntityPlayerMP player) {
+        SkyBlockPoint island = SkyBlockDataManager.getIsland(player);
+        if (island == null) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.notfound",
+                    EnumChatFormatting.RED, false, false, false, player.username));
+            return;
+        }
+        if (!player.username.equals(island.owner)) {
+            player.sendChatToPlayer(createMessage("commands.island.not_owner",
+                    EnumChatFormatting.RED, false, false, false));
+            return;
+        }
+        if (player.dimension != island.dim) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.setwarp_dim_mismatch",
+                    EnumChatFormatting.RED, false, false, false, player.username));
+            return;
+        }
+        if (!SkyBlockProtectionUtil.isInRegion(player, island)) {
+            player.sendChatToPlayer(createFormattedMessage("commands.island.setwarp.out_of_bounds",
+                    EnumChatFormatting.RED, false, false, false, 1024));
+            return;
+        }
+        island.warpX = player.posX;
+        island.warpY = player.posY;
+        island.warpZ = player.posZ;
+        SkyBlockDataManager.setIsland(player, island);
+        player.sendChatToPlayer(createFormattedMessage("commands.island.setwarp.success",
+                EnumChatFormatting.GREEN, false, false, false, player.username));
     }
 
     private void handleWarpTeleport(EntityPlayerMP player, String ownerName) {
@@ -1046,7 +1074,7 @@ public class SkyBlockCommand extends CommandBase {
                         island = SkyBlockDataManager.getIslandForMember(player);
                     }
                     if (island != null && player.dimension == island.dim) {
-                        player.setPositionAndUpdate(island.spawnX, island.spawnY, island.spawnZ);
+                        player.setPositionAndUpdate(island.warpX, island.warpY, island.warpZ);
                         player.sendChatToPlayer(createFormattedMessage("commands.island.tp_success",
                                 EnumChatFormatting.GREEN, false, false, false, player.username));
                     } else if (island == null) {
@@ -1110,7 +1138,7 @@ public class SkyBlockCommand extends CommandBase {
             PendingTeleport pt = itTP.next().getValue();
             pt.ticksLeft--;
             if (pt.ticksLeft <= 0) {
-                pt.from.setPositionAndUpdate(pt.targetIsland.spawnX, pt.targetIsland.spawnY, pt.targetIsland.spawnZ);
+                pt.from.setPositionAndUpdate(pt.targetIsland.warpX, pt.targetIsland.warpY, pt.targetIsland.warpZ);
                 pt.from.sendChatToPlayer(createFormattedMessage("commands.island.tpa.tp_success",
                         EnumChatFormatting.GREEN, false, false, false, pt.targetIsland.owner));
                 EntityPlayerMP targetPlayer = getOnlinePlayer(pt.targetIsland.owner);

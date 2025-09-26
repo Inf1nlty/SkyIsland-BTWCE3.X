@@ -5,7 +5,7 @@ import net.minecraft.src.*;
 
 public class SkyBlockProtectionUtil {
 
-    public static boolean isInRegion(EntityPlayer player, SkyBlockPoint island) {
+    public static boolean checkRegion(EntityPlayer player, SkyBlockPoint island) {
         if (player == null) return false;
         if (player.dimension != island.dim) return false;
 
@@ -13,6 +13,14 @@ public class SkyBlockProtectionUtil {
         double dz = Math.abs(player.posZ - island.z);
 
         return dx <= 512.0 && dz <= 512.0;
+    }
+
+    public static boolean isInRegion(EntityPlayer player, SkyBlockPoint island) {
+        return checkRegion(player, island);
+    }
+
+    public static boolean isInProtectRegion(EntityPlayer player, SkyBlockPoint island) {
+        return checkRegion(player, island);
     }
 
     public static boolean hasIslandPermission(EntityPlayer player, SkyBlockPoint island) {
@@ -102,7 +110,7 @@ public class SkyBlockProtectionUtil {
 
                 if (player.dimension != island.dim) continue;
 
-                if (isInRegion(player, island)) {
+                if (isInProtectRegion(player, island)) {
 
                     player.setPositionAndUpdate(0.5, 101.0, 0.5);
                     player.sendChatToPlayer(SkyBlockCommand.createMessage("commands.island.protection.kicked", EnumChatFormatting.RED, false, false, false));

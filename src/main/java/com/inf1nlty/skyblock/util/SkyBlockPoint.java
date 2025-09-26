@@ -12,6 +12,7 @@ public class SkyBlockPoint {
     public final String owner;
     public Set<String> members = new HashSet<>();
     public double spawnX, spawnY, spawnZ;
+    public Double warpX, warpY , warpZ;
     public boolean tpaEnabled;
     public boolean warpEnabled;
     public boolean protectEnabled;
@@ -31,6 +32,9 @@ public class SkyBlockPoint {
         this.initSpawnX = this.spawnX;
         this.initSpawnY = this.spawnY;
         this.initSpawnZ = this.spawnZ;
+        this.warpX = this.initSpawnX;
+        this.warpY = this.initSpawnY;
+        this.warpZ = this.initSpawnZ;
         this.protectEnabled = true;
         this.kickEnabled = false;
     }
