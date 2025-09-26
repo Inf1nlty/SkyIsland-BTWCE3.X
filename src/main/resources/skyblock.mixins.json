@@ -6,9 +6,11 @@
   "mixins": [
     "accessor.BiomeGenBaseAccessor",
     "accessor.EntityAccessor",
+    "accessor.EntityFishHookAccessor",
     "accessor.RegionFileCacheAccessor",
     "accessor.SpawnerAnimalsAccessor",
     "world.BiomeGenBaseMixin",
+    "world.GenLayerBiomeMixin",
     "world.MinecraftServerMixin",
     "world.NetherBridgeMapGenMixin",
     "world.ServerConfigurationManagerMixin",
