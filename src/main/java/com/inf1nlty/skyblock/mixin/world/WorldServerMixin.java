@@ -19,10 +19,4 @@ public abstract class WorldServerMixin {
             ((WorldServer)(Object)this).getWorldInfo().setSpawnPosition(0, 101, 0);
         }
     }
-
-    @ModifyArg(method= "tick", at=@At(value="INVOKE", target="Lnet/minecraft/src/SpawnerAnimals;findChunksForSpawning(Lnet/minecraft/src/WorldServer;ZZZ)I"), index=3)
-    public boolean allowSpawnAnimal(boolean spawnAnimal) {
-        return (SkyblockConfig.ALLOW_ANIMAL_SPAWN_ON_GRASSSLAB && SkyBlockWorldUtil.isVoidWorldLoaded()) || spawnAnimal;
-    }
-
 }

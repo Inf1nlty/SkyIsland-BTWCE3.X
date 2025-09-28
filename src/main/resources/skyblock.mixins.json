@@ -1,4 +1,4 @@
- {
+{
   "required": true,
   "minVersion": "0.8",
   "package": "com.inf1nlty.skyblock.mixin",
@@ -19,6 +19,7 @@
     "world.WorldMixin",
     "world.WorldProviderMixin",
     "world.WorldServerMixin",
+    "world.WorldServerMixin1",
     "world.block.BlockIceMixin",
     "world.block.BlockMixin",
     "world.block.ItemInWorldManagerMixin",
@@ -46,5 +47,6 @@
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  },
+  "plugin": "com.inf1nlty.skyblock.util.SkyblockMixinPlugin"
 }
