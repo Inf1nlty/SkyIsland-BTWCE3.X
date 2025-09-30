@@ -1,11 +1,14 @@
 package com.inf1nlty.skyblock.mixin.world.block;
 
 import btw.block.BTWBlocks;
+import com.inf1nlty.skyblock.SkyblockConfig;
 import com.inf1nlty.skyblock.util.SkyBlockProtectionUtil;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
@@ -30,4 +33,12 @@ public abstract class BlockMixin {
         }
     }
 
+    @ModifyConstant(method = "tickRate", constant = @Constant(intValue = 10))
+    private int accelerateLeavesTickRate(int original) {
+        Block self = (Block)(Object)this;
+        if (SkyblockConfig.FAST_LEAF_DECAY && self instanceof BlockLeavesBase) {
+            return Math.max(1, original / 5);
+        }
+        return original;
+    }
 }
