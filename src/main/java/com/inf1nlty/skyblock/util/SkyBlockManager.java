@@ -20,7 +20,7 @@ public class SkyBlockManager {
 
     private static final java.util.Set<String> usedIslandPositions = new java.util.HashSet<>();
 
-    public static final String SCHEMATIC_PATH = "assets/skyblock/island02.schematic";
+    public static final String SCHEMATIC_PATH = "assets/skyblock/island01.schematic";
 
     private static boolean islandPositionsDirty = false;
 
