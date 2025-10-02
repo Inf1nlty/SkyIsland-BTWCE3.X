@@ -1,13 +1,11 @@
 package com.inf1nlty.skyblock.mixin.world;
 
-import com.inf1nlty.skyblock.SkyblockConfig;
 import com.inf1nlty.skyblock.util.SkyBlockWorldUtil;
 import net.minecraft.src.WorldServer;
 import net.minecraft.src.WorldSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldServer.class)
