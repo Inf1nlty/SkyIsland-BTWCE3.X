@@ -265,6 +265,70 @@ public class SkyBlockManager {
                 world.setBlockTileEntity(baseX + x, baseY + y, baseZ + z, TileEntity.createAndLoadEntity(te));
             }
         }
+
+        if (schematic.entities != null) {
+            for (NBTTagCompound ent : schematic.entities) {
+                if (ent.hasKey("id") && ent.getString("id").equals("ItemFrame")) {
+                    double x, y, z;
+                    if (ent.hasKey("Pos")) {
+                        NBTTagList posList = (NBTTagList) ent.getTag("Pos");
+                        double px = getNBTListDouble(posList, 0) + baseX;
+                        double py = getNBTListDouble(posList, 1) + baseY;
+                        double pz = getNBTListDouble(posList, 2) + baseZ;
+
+                        NBTTagList newPosList = new NBTTagList();
+                        newPosList.appendTag(new NBTTagDouble("", px));
+                        newPosList.appendTag(new NBTTagDouble("", py));
+                        newPosList.appendTag(new NBTTagDouble("", pz));
+                        ent.setTag("Pos", newPosList);
+
+                        ent.setInteger("TileX", (int)Math.floor(px));
+                        ent.setInteger("TileY", (int)Math.floor(py));
+                        ent.setInteger("TileZ", (int)Math.floor(pz));
+
+                        x = px;
+                        y = py;
+                        z = pz;
+                    }
+                    else {
+                        x = ent.getInteger("TileX") + baseX;
+                        y = ent.getInteger("TileY") + baseY;
+                        z = ent.getInteger("TileZ") + baseZ;
+                        ent.setInteger("TileX", (int)x);
+                        ent.setInteger("TileY", (int)y);
+                        ent.setInteger("TileZ", (int)z);
+                    }
+
+                    Entity entity = EntityList.createEntityFromNBT(ent, world);
+                    if (entity != null) {
+                        entity.setPosition(x, y, z);
+                        boolean spawned = world.spawnEntityInWorld(entity);
+                        System.out.println("[SkyBlock] Try spawn ItemFrame: " + x + "," + y + "," + z +
+                                ", Direction=" + (ent.hasKey("Direction") ? ent.getByte("Direction") : "none") +
+                                ", spawned=" + spawned);
+                    }
+                    else {
+                        System.out.println("[SkyBlock] Failed to create ItemFrame entity from NBT: " + ent);
+                    }
+                }
+            }
+        }
+    }
+
+    private static double getNBTListDouble(NBTTagList list, int idx) {
+        NBTBase tag = list.tagAt(idx);
+        if (tag instanceof NBTTagDouble) {
+            return ((NBTTagDouble) tag).data;
+        } else if (tag instanceof NBTTagFloat) {
+            return ((NBTTagFloat) tag).data;
+        } else if (tag instanceof NBTTagInt) {
+            return ((NBTTagInt) tag).data;
+        } else if (tag instanceof NBTTagShort) {
+            return ((NBTTagShort) tag).data;
+        } else if (tag instanceof NBTTagByte) {
+            return ((NBTTagByte) tag).data;
+        }
+        throw new IllegalArgumentException("NBTTagList does not contain a numeric type at index " + idx);
     }
 
     public static void setSpawn(SkyBlockPoint island, double x, double y, double z) {

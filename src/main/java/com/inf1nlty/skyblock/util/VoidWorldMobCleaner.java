@@ -6,6 +6,8 @@ import net.minecraft.src.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility for automatically removing natural mobs in void world after a certain time.
@@ -37,6 +39,8 @@ public class VoidWorldMobCleaner {
         }
 
         int curTick = MinecraftServer.getServer().getTickCounter();
+
+        List<EntityLiving> toRemove = new ArrayList<>();
 
         for (Object obj : world.loadedEntityList) {
             if (shouldClean(obj) && obj instanceof EntityLiving mob) {
@@ -77,7 +81,7 @@ public class VoidWorldMobCleaner {
                     }
 
                     if (shouldClean) {
-                        mob.setDead();
+                        toRemove.add(mob);
                         mobSpawnTickMap.remove(uuid);
                     }
 
@@ -86,13 +90,17 @@ public class VoidWorldMobCleaner {
                     PlayerAFKChecker.updatePlayerMove(player, curTick);
                     if (PlayerAFKChecker.isAFK(player, curTick)) {
                         if (curTick - spawnTick >= MOB_CLEAN_WHEN_TARGET_AFK_TICKS) {
-                            mob.setDead();
+                            toRemove.add(mob);
                             mobSpawnTickMap.remove(uuid);
                         }
                     }
                     // If player is active, do not remove
                 }
             }
+        }
+
+        for (EntityLiving mob : toRemove) {
+            mob.setDead();
         }
 
         // Clean up map entries for mobs which no longer exist

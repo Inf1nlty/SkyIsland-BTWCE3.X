@@ -16,8 +16,9 @@ public class SchematicData {
     public final byte[] data;
     public final byte[] addBlocks;
     public final ArrayList<NBTTagCompound> tileEntities;
+    public final ArrayList<NBTTagCompound> entities;
 
-    public SchematicData(int width, int length, int height, byte[] blocks, byte[] data, byte[] addBlocks, ArrayList<NBTTagCompound> tileEntities) {
+    public SchematicData(int width, int length, int height, byte[] blocks, byte[] data, byte[] addBlocks, ArrayList<NBTTagCompound> tileEntities, ArrayList<NBTTagCompound> entities) {
         this.width = width;
         this.length = length;
         this.height = height;
@@ -25,14 +26,15 @@ public class SchematicData {
         this.data = data;
         this.addBlocks = addBlocks;
         this.tileEntities = tileEntities;
+        this.entities = entities;
     }
 
     public int getBlockId(int idx) {
         int id = blocks[idx] & 0xFF;
         if (addBlocks != null && idx / 2 < addBlocks.length) {
             int add = (idx % 2 == 0)
-                    ? (addBlocks[idx / 2] & 0x0F)
-                    : ((addBlocks[idx / 2] >> 4) & 0x0F);
+                    ? ((addBlocks[idx / 2] >> 4) & 0x0F)
+                    : (addBlocks[idx / 2] & 0x0F);
             id |= (add << 8);
         }
         return id;
@@ -79,6 +81,15 @@ public class SchematicData {
         for (int i = 0; i < teList.tagCount(); ++i) {
             tileEntities.add((NBTTagCompound) teList.tagAt(i));
         }
-        return new SchematicData(width, length, height, blocks, data, addBlocks, tileEntities);
+
+        ArrayList<NBTTagCompound> entities = new ArrayList<>();
+        if (nbt.hasKey("Entities")) {
+            NBTTagList entList = nbt.getTagList("Entities");
+            for (int i = 0; i < entList.tagCount(); ++i) {
+                entities.add((NBTTagCompound) entList.tagAt(i));
+            }
+        }
+
+        return new SchematicData(width, length, height, blocks, data, addBlocks, tileEntities, entities);
     }
 }
