@@ -189,6 +189,7 @@ public class SkyBlockManager {
         int i = 0;
         for (String pos : usedIslandPositions) {
             globalTag.setString("pos_" + i, pos);
+            i++;
         }
         worldTag.setTag("SkyIslandGlobal", globalTag);
     }
